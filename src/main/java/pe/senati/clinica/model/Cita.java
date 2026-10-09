@@ -1,54 +1,49 @@
 package pe.senati.clinica.model;
 
-import java.time.LocalDateTime;
-
 public class Cita {
-    private Long idCita;
-    private Object paciente; // Se usa Object temporalmente hasta que creen Paciente
-    private Object medico;   // Se usa Object temporalmente hasta que creen Medico
-    private LocalDateTime fechaHoraCita;
-    private EstadoCita estado;
+    private int idCita;
+    private String fechaCita;
+    private String horaCita;
+    private String motivo;
+    private String estado;
+    private int idPaciente;
+    private int idMedico;
 
+    // Constructor vacío
     public Cita() {
     }
 
-    public Long getIdCita() {
-        return idCita;
-    }
-
-    public void setIdCita(Long idCita) {
+    // Constructor completo
+    public Cita(int idCita, String fechaCita, String horaCita, String motivo, String estado, int idPaciente, int idMedico) {
         this.idCita = idCita;
-    }
-
-    public Object getPaciente() {
-        return paciente;
-    }
-
-    public void setPaciente(Object paciente) {
-        this.paciente = paciente;
-    }
-
-    public Object getMedico() {
-        return medico;
-    }
-
-    public void setMedico(Object medico) {
-        this.medico = medico;
-    }
-
-    public LocalDateTime getFechaHoraCita() {
-        return fechaHoraCita;
-    }
-
-    public void setFechaHoraCita(LocalDateTime fechaHoraCita) {
-        this.fechaHoraCita = fechaHoraCita;
-    }
-
-    public EstadoCita getEstado() {
-        return estado;
-    }
-
-    public void setEstado(EstadoCita estado) {
+        this.fechaCita = fechaCita;
+        this.horaCita = horaCita;
+        this.motivo = motivo;
         this.estado = estado;
+        this.idPaciente = idPaciente;
+        this.idMedico = idMedico;
     }
+
+    // Getters y Setters
+    public int getIdCita() { return idCita; }
+    public void setIdCita(int idCita) { this.idCita = idCita; }
+
+    public String getFechaCita() { return fechaCita; }
+    public void setFechaCita(String fechaCita) { this.fechaCita = fechaCita; }
+
+    public String getHoraCita() { return horaCita; }
+    public void setHoraCita(String horaCita) { this.horaCita = horaCita; }
+
+    public String getMotivo() { return motivo; }
+    public void setMotivo(String motivo) { this.motivo = motivo; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public int getIdPaciente() { return idPaciente; }
+    public void setIdPaciente(int idPaciente) { this.idPaciente = idPaciente; }
+
+    public int getIdMedico() { return idMedico; }
+    public void setIdMedico(int idMedico) { this.idMedico = idMedico; }
 }
+

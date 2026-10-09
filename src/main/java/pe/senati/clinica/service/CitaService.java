@@ -1,13 +1,39 @@
 package pe.senati.clinica.service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import pe.senati.clinica.dao.CitaDAO;
 import pe.senati.clinica.model.Cita;
 
 public class CitaService {
-    public List<Cita> listarPorMedico(Long idMedico, LocalDate fecha) {
-        return new ArrayList<>(); // Retorna lista vacía provisional para que compile
+    
+    private final CitaDAO citaDAO;
+
+    // Constructor que inicializa el acceso a datos
+    public CitaService() {
+        this.citaDAO = new CitaDAO();
+    }
+
+    /**
+     * Regla de negocio para registrar una cita.
+     * Valida que los campos esenciales no estén vacíos antes de enviarlos a la BD.
+     */
+    public boolean agendarNuevaCita(Cita cita) {
+        if (cita.getFechaCita() == null || cita.getFechaCita().trim().isEmpty() ||
+            cita.getHoraCita() == null || cita.getHoraCita().trim().isEmpty() ||
+            cita.getIdPaciente() <= 0 || cita.getIdMedico() <= 0) {
+            
+            System.out.println("Error en Service: Datos de la cita incompletos o inválidos.");
+            return false;
+        }
+        
+        // Si pasa las validaciones, lo envía al DAO para guardarlo en XAMPP
+        return citaDAO.registrarCita(
+            cita.getIdPaciente(), 
+            cita.getIdMedico(), 
+            cita.getFechaCita(), 
+            cita.getHoraCita(), 
+            cita.getMotivo()
+        );
     }
 }
+
 
