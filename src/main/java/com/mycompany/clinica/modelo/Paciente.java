@@ -1,34 +1,43 @@
 package com.mycompany.clinica.modelo;
 
 public class Paciente {
-    private String dni;
-    private String nombre;
-    private String apellido;
+    private int idPaciente;
+    private String nombres;
+    private String apellidos;
+    private String documento;
+    private String fechaNacimiento;
     private String telefono;
-    private String historialClinico;
+    private String email;
 
-    // Constructor
-    public Paciente(String dni, String nombre, String apellido, String telefono) {
-        this.dni = dni;
-        this.nombre = nombre;
-        this.apellido = apellido;
+    // Constructor para registrar un paciente nuevo
+    public Paciente(String nombres, String apellidos, String documento, String fechaNacimiento, String telefono, String email) {
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.documento = documento;
+        this.fechaNacimiento = fechaNacimiento;
         this.telefono = telefono;
-        this.historialClinico = "";
+        this.email = email;
     }
 
-    // Getters y Setters
-    public String getDni() { return dni; }
-    public void setDni(String dni) { this.dni = dni; }
+    // Métodos Getters y Setters necesarios
+    public int getIdPaciente() { return idPaciente; }
+    public void setIdPaciente(int idPaciente) { this.idPaciente = idPaciente; }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public String getNombres() { return nombres; }
+    public void setNombres(String nombres) { this.nombres = nombres; }
 
-    public String getApellido() { return apellido; }
-    public void setApellido(String apellido) { this.apellido = apellido; }
+    public String getApellidos() { return apellidos; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+
+    public String getDocumento() { return documento; }
+    public void setDocumento(String documento) { this.documento = documento; }
+
+    public String getFechaNacimiento() { return fechaNacimiento; }
+    public void setFechaNacimiento(String fechaNacimiento) { this.fechaNacimiento = fechaNacimiento; }
 
     public String getTelefono() { return telefono; }
     public void setTelefono(String telefono) { this.telefono = telefono; }
 
-    public String getHistorialClinico() { return historialClinico; }
-    public void setHistorialClinico(String historialClinico) { this.historialClinico = historialClinico; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

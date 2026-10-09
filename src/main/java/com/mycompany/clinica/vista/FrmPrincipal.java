@@ -57,6 +57,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Historial clinica");
+        jMenuItem2.addActionListener(this::jMenuItem2ActionPerformed);
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
@@ -98,6 +99,21 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    FrmHistorial frm = new FrmHistorial();
+    dskPrincipal.add(frm);
+    frm.pack();
+    
+    // Calcula la posición central
+    int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
+    int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
+    frm.setLocation(Math.max(0, x), Math.max(0, y));
+    
+    frm.setVisible(true);
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
