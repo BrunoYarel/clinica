@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import com.mycompany.clinica.Conexion;
+
+
 
 /**
  * Interfaz limpia y funcional para el registro de nuevos usuarios en el sistema.
@@ -157,33 +160,89 @@ public class NuevoUsuario extends javax.swing.JFrame {
     /**
      * Evento para capturar los datos y proceder con la creación del perfil.
      */
+        /**
+     * Evento para capturar los datos y proceder con la creación del perfil.
+     */
+        /**
+     * Evento para capturar los datos y proceder con la creación del perfil.
+     */
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {
         String nombre = txtNombre.getText().trim();
         String passUsuario = new String(txtPasswordUsuario.getPassword());
         String passAdmin = new String(txtPasswordAdmin.getPassword());
         String rolSeleccionado = (String) cbxRol.getSelectedItem();
 
-        // Validación de campos vacíos
+        // 1. Validación de campos vacíos
         if (nombre.isEmpty() || passUsuario.isEmpty() || passAdmin.isEmpty() || cbxRol.getSelectedIndex() == 0) {
             JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos requeridos.", "Campos vacíos", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // ESPACIO DE LOGICA: Aquí mandas las variables a tu controlador/base de datos
-        logger.info("Intento de registro de usuario: " + nombre + " con Rol: " + rolSeleccionado);
-        
-        JOptionPane.showMessageDialog(this, "El usuario '" + nombre + "' ha sido creado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
-        btnLimpiarActionPerformed(evt);
+        // 2. Mapear el rol seleccionado al ENUM exacto de tu Base de Datos
+        // 2. Mapear el rol seleccionado al ENUM exacto de tu Base de Datos (Caso sensitivo)
+String rolBD = "";
+if (rolSeleccionado.equalsIgnoreCase("Administrador")) {
+    rolBD = "Admin"; 
+} else if (rolSeleccionado.equalsIgnoreCase("Médico") || rolSeleccionado.equalsIgnoreCase("Medico")) {
+    rolBD = "Medico"; // Exactamente como está en tu ENUM de MySQL
+} else if (rolSeleccionado.equalsIgnoreCase("Usuario Estándar") || rolSeleccionado.equalsIgnoreCase("Recepcionista")) {
+    rolBD = "Recepcionista"; // Exactamente como está en tu ENUM de MySQL
+}
+
+
+        // 3. Sentencia SQL con los nombres exactos de tu tabla 'usuario'
+        // Incluimos 'estado' configurado por defecto en 1 (Activo)
+        String sql = "INSERT INTO usuario (username, password_hash, rol, estado) VALUES (?, ?, ?, 1)";
+
+        // 4. Conexión a la Base de Datos e Inserción
+        try (java.sql.Connection con = Conexion.conectar();
+             java.sql.PreparedStatement pst = con.prepareStatement(sql)) {
+
+            if (con == null) {
+                JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos. Verifique XAMPP.", "Error de Conexión", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Asignar los valores correspondientes a los parámetros '?'
+            pst.setString(1, nombre);
+            pst.setString(2, passUsuario); // Recomendable en el futuro aplicar hashing
+            pst.setString(3, rolBD);        // 'Admin', 'Medico' o 'Recepcionista'
+
+            // Ejecutar la inserción
+            int filasAfectadas = pst.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                JOptionPane.showMessageDialog(this, "El usuario '" + nombre + "' ha sido registrado con éxito.", "Registro Exitoso", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Limpiar campos y volver al Login automaticamente
+                btnLimpiarActionPerformed(evt);
+                btnIniciarSesionActionPerformed(evt);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo registrar el usuario. Intente nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (java.sql.SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error al registrar usuario en la BD", e);
+            JOptionPane.showMessageDialog(this, "Error de base de datos: " + e.getMessage(), "Error SQL", JOptionPane.ERROR_MESSAGE);
+        }
     }
+
+
 
     /**
      * Evento para redireccionar a la pantalla de login.
      */
     private void btnIniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {
-        // Aquí puedes instanciar tu ventana de Login
-        // Ejemplo: new Login().setVisible(true);
-        // this.dispose();
-        JOptionPane.showMessageDialog(this, "Redireccionando al panel de Inicio de Sesión...", "Navegación", JOptionPane.INFORMATION_MESSAGE);
+        Login ventanaLogin = new Login();
+        
+        // 2. Hacer visible la ventana de Login
+        ventanaLogin.setVisible(true);
+        
+        // 3. Centrar la ventana de Login en la pantalla (opcional pero recomendado)
+        ventanaLogin.setLocationRelativeTo(null);
+        
+        // 4. Cerrar la ventana actual de Registro (NuevoUsuario)
+        this.dispose();
     }
 
     /**

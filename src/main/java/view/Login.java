@@ -1,13 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-package view;
 
-/**
- *
- * @author PC-03
- */
+package view;
+import com.mycompany.clinica.Conexion;
+
 public class Login extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
@@ -111,16 +105,60 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        // 1. Crear una instancia de la ventana de registro
+    NuevoUsuario ventanaRegistro = new NuevoUsuario(); 
+    
+    // 2. Hacer visible la nueva ventana
+    ventanaRegistro.setVisible(true);
+    
+    // 3. Cerrar (ocultar) la ventana de Login actual
+    this.dispose(); 
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void entrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entrarActionPerformed
-        // TODO add your handling code here:
+
+            // 1. Obtener el texto ingresado en los campos
+    String usuario = jEditorPane1.getText().trim();
+    String contrasena = jEditorPane2.getText().trim();
+    
+    // Validar que el usuario no deje los campos en blanco
+    if (usuario.isEmpty() || contrasena.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Campos vacíos", javax.swing.JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    // 2. Consulta SQL (Ajusta los nombres si tu tabla o campos son diferentes)
+    String sql = "SELECT * FROM usuario WHERE username = ? AND password_hash = ? AND estado = 1";
+    
+    // 3. Conectar a MySQL usando tu clase Conexion
+    try (java.sql.Connection con = Conexion.conectar(); 
+         java.sql.PreparedStatement pst = con.prepareStatement(sql)) {
+        
+        if (con == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No se pudo conectar a la base de datos. Verifique XAMPP.", "Error de Conexión", javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Pasar los datos de forma segura
+        pst.setString(1, usuario);
+        pst.setString(2, contrasena);
+        
+        try (java.sql.ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
+                javax.swing.JOptionPane.showMessageDialog(this, "¡Bienvenido a la Clínica!", "Login Exitoso", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                this.dispose(); // Cierra la ventana actual de Login
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.", "Acceso Denegado", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+    } catch (java.sql.SQLException e) {
+        logger.log(java.util.logging.Level.SEVERE, "Error en el proceso de login", e);
+        javax.swing.JOptionPane.showMessageDialog(this, "Ocurrió un error en el sistema: " + e.getMessage(), "Error SQL", javax.swing.JOptionPane.ERROR_MESSAGE);
+    }
+
     }//GEN-LAST:event_entrarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
