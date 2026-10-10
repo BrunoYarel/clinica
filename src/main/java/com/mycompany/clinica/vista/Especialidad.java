@@ -1,4 +1,4 @@
-package com.mycompany.clinica;
+package com.mycompany.clinica.vista;
 
 import javax.swing.JFrame;
 import javax.swing.JDesktopPane;
@@ -17,6 +17,16 @@ import java.awt.Font;
 public class Especialidad {
 
     public static void main(String[] args) {
+        abrirVentana();
+    }
+
+    /**
+     * Crea y muestra la ventana MDI de Especialidades (formulario padre + FrmEspecialidad).
+     * La usan main() para probarla sola y MenuPrincipal para abrirla desde el sistema.
+     *
+     * @return la ventana principal creada, para que quien la abre pueda controlar su cierre
+     */
+    public static JFrame abrirVentana() {
         // 1. Crear el JFrame principal (Formulario Padre MDI)
         JFrame ventanaPrincipal = new JFrame("Gestión de Especialidades - Vista de Desarrollo");
         ventanaPrincipal.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximizado a pantalla completa
@@ -32,30 +42,31 @@ public class Especialidad {
         // 4. Instanciar e integrar tu JInternalFrame (Formulario Hijo)
         FrmEspecialidad frm = new FrmEspecialidad();
         dskPrincipal.add(frm);
-        
+
         // 5. Ajustar propiedades del formulario para evitar deformaciones en el renderizado
         ajustarCamposDeTexto(frm);
-        
+
         // Aplicar el TitledBorder para incrustar el título "ESPECIALIDAD" en el contorno azul
         LineBorder bordeAzul = new LineBorder(new Color(120, 160, 220), 2);
         TitledBorder tituloBorde = new TitledBorder(
-            bordeAzul, 
-            "REGISTRO DE ESPECIALIDADES", 
-            TitledBorder.CENTER, 
-            TitledBorder.TOP, 
-            new Font("Tahoma", Font.BOLD, 12), 
-            Color.BLACK
+                bordeAzul,
+                "REGISTRO DE ESPECIALIDADES",
+                TitledBorder.CENTER,
+                TitledBorder.TOP,
+                new Font("Tahoma", Font.BOLD, 12),
+                Color.BLACK
         );
         frm.setBorder(tituloBorde);
-        
+
         // Asignar tamaño cómodo y centrar en pantalla usando la fórmula exacta de la guía
-        frm.setSize(600, 500); 
+        frm.setSize(600, 500);
         int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
         int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
         frm.setLocation(Math.max(0, x), Math.max(0, y)); // Evita coordenadas negativas
-        
+
         // 6. Mostrar el formulario final listo para interactuar con el CRUD
         frm.setVisible(true);
+        return ventanaPrincipal;
     }
 
     /**

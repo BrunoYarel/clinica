@@ -9,16 +9,16 @@ package com.mycompany.clinica.vista;
  * @author PC-22
  */
 public class FrmPrincipal extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmPrincipal.class.getName());
 
     /**
      * Creates new form FrmPrincipal
      */
     public FrmPrincipal() {
-        
+
         initComponents();
-    setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH); // Maximiza la ventana
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH); // Maximiza la ventana
     }
 
     /**
@@ -42,12 +42,12 @@ public class FrmPrincipal extends javax.swing.JFrame {
         javax.swing.GroupLayout dskPrincipalLayout = new javax.swing.GroupLayout(dskPrincipal);
         dskPrincipal.setLayout(dskPrincipalLayout);
         dskPrincipalLayout.setHorizontalGroup(
-            dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+                dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 400, Short.MAX_VALUE)
         );
         dskPrincipalLayout.setVerticalGroup(
-            dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 277, Short.MAX_VALUE)
+                dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 277, Short.MAX_VALUE)
         );
 
         jMenu1.setText("Pacientes");
@@ -70,47 +70,47 @@ public class FrmPrincipal extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dskPrincipal)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(dskPrincipal)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(dskPrincipal)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(dskPrincipal)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-    // 1. Instanciar el formulario hijo 
-    FrmPacientes frm = new FrmPacientes();
-    
-    // Agrega al contenedor dskPrincipal 
-    dskPrincipal.add(frm);
-    frm.pack();
-    
-    // 3. Calcular la posición exacta para centrarlo
-    int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
-    int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
-    
-    // 4. Asignar la posición y hacerlo visible
-    frm.setLocation(Math.max(0, x), Math.max(0, y));
-    frm.setVisible(true);
+        // 1. Instanciar el formulario hijo
+        FrmPacientes frm = new FrmPacientes();
+
+        // Agrega al contenedor dskPrincipal
+        dskPrincipal.add(frm);
+        frm.pack();
+
+        // 3. Calcular la posición exacta para centrarlo
+        int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
+        int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
+
+        // 4. Asignar la posición y hacerlo visible
+        frm.setLocation(Math.max(0, x), Math.max(0, y));
+        frm.setVisible(true);
 
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-    FrmHistorial frm = new FrmHistorial();
-    dskPrincipal.add(frm);
-    frm.pack();
-    
-    // Calcula la posición central
-    int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
-    int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
-    frm.setLocation(Math.max(0, x), Math.max(0, y));
-    
-    frm.setVisible(true);
+        FrmHistorial frm = new FrmHistorial();
+        dskPrincipal.add(frm);
+        frm.pack();
+
+        // Calcula la posición central
+        int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
+        int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
+        frm.setLocation(Math.max(0, x), Math.max(0, y));
+
+        frm.setVisible(true);
 
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem2ActionPerformed
@@ -122,7 +122,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
