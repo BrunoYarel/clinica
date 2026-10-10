@@ -1,9 +1,9 @@
-package view;
+package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.servicio.UsuarioService;
 import java.awt.*;
 import java.sql.SQLException;
 import javax.swing.*;
-import service.UsuarioService;
 
 /**
  * Pantalla de inicio de sesión. Es el punto de entrada de la aplicación.

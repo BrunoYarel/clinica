@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class Conexion {
     private static final String URL = "jdbc:mysql://localhost:3306/clinica"; // Reemplaza por el nombre real de tu BD
     private static final String USUARIO = "root";
-    private static final String CLAVE = ""; 
+    private static final String CLAVE = "";
 
     public static Connection conectar() {
         Connection conexion = null;
@@ -22,5 +22,13 @@ public class Conexion {
             System.out.println("Error de conexión: " + e.getMessage());
         }
         return conexion;
+    }
+
+    /**
+     * Mismo método que conectar(), con el nombre que usan los formularios de Oscar Ticona
+     * (FrmPaciente y FrmEspecialidad). Así los tres equipos comparten una sola conexión.
+     */
+    public static Connection getConexion() {
+        return conectar();
     }
 }
