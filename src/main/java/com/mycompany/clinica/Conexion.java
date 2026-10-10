@@ -3,28 +3,24 @@ package com.mycompany.clinica;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import javax.swing.JOptionPane;
 
 public class Conexion {
-    
-
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
-    // Reemplaza 'nombre_de_tu_base_de_datos' por el nombre real en phpMyAdmin
-    private static final String URL = "jdbc:mysql://localhost:3306/clinica?serverTimezone=UTC";
-    private static final String USER = "root"; 
-    private static final String PASSWORD = "";
+    private static final String URL = "jdbc:mysql://localhost:3306/clinica"; // Reemplaza por el nombre real de tu BD
+    private static final String USUARIO = "root";
+    private static final String CLAVE = ""; 
 
     public static Connection conectar() {
-        Connection cn = null;
+        Connection conexion = null;
         try {
-            Class.forName(DRIVER);
-            cn = DriverManager.getConnection(URL, USER, PASSWORD);
-
+            // Registrar el driver de Maven
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conexion = DriverManager.getConnection(URL, USUARIO, CLAVE);
+            System.out.println("¡Conexión establecida con éxito en XAMPP!");
         } catch (ClassNotFoundException e) {
-            JOptionPane.showMessageDialog(null, "Error: No se encontró el driver de MySQL. " + e.getMessage());
+            System.out.println("Error: No se encontró el driver de MySQL: " + e.getMessage());
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al conectar a la base de datos: " + e.getMessage());
+            System.out.println("Error de conexión: " + e.getMessage());
         }
-        return cn;
+        return conexion;
     }
 }
