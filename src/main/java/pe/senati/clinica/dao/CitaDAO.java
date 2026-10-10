@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import pe.senati.clinica.model.Cita;
+import java.util.ArrayList;
+import java.util.List;
+import java.sql.ResultSet;
 
 public class CitaDAO {
 
@@ -11,7 +15,7 @@ public class CitaDAO {
     private static final String USER = "root";
     private static final String PASSWORD = ""; 
 
-    private Connection getConexion() {
+        private Connection getConexion() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(URL, USER, PASSWORD);
@@ -22,7 +26,7 @@ public class CitaDAO {
     }
 
     public boolean registrarCita(int idPaciente, int idMedico, String fecha, String hora, String motivo) {
-        String sql = "INSERT INTO CITA (fecha_cita, hora_cita, motivo, estado, id_paciente, id_medico) VALUES (?, ?, ?, 'Pendiente', ?, ?)";
+        String sql = "INSERT INTO cita (fecha_cita, hora_cita, motivo, estado, id_paciente, id_medico) VALUES (?, ?, ?, 'Pendiente', ?, ?)";
 
         try (Connection con = getConexion(); 
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -40,6 +44,33 @@ public class CitaDAO {
             System.out.println("Error al registrar cita en BD: " + e.getMessage());
             return false;
         }
+    }
+    
+    public List<Cita> listarCitas() {
+        List<Cita> lista = new ArrayList<>();
+        String sql = "SELECT id_cita, fecha_cita, hora_cita, motivo, estado, id_paciente, id_medico FROM cita";
+
+        try (Connection con = getConexion();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Cita cita = new Cita();
+                cita.setIdCita(rs.getInt("id_cita"));
+                cita.setFechaCita(rs.getString("fecha_cita"));
+                cita.setHoraCita(rs.getString("hora_cita"));
+                cita.setMotivo(rs.getString("motivo"));
+                cita.setEstado(rs.getString("estado"));
+                cita.setIdPaciente(rs.getInt("id_paciente"));
+                cita.setIdMedico(rs.getInt("id_medico"));
+                
+                lista.add(cita);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al listar citas desde la BD: " + e.getMessage());
+        }
+        return lista;
     }
 }
 

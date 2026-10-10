@@ -2,6 +2,8 @@ package pe.senati.clinica.service;
 
 import pe.senati.clinica.dao.CitaDAO;
 import pe.senati.clinica.model.Cita;
+import java.util.List;
+
 
 public class CitaService {
     
@@ -25,7 +27,6 @@ public class CitaService {
             return false;
         }
         
-        // Si pasa las validaciones, lo envía al DAO para guardarlo en XAMPP
         return citaDAO.registrarCita(
             cita.getIdPaciente(), 
             cita.getIdMedico(), 
@@ -33,6 +34,10 @@ public class CitaService {
             cita.getHoraCita(), 
             cita.getMotivo()
         );
+    }
+    
+    public List<Cita> obtenerTodasLasCitas() {
+        return citaDAO.listarCitas();
     }
 }
 

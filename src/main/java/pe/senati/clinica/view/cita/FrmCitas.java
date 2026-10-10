@@ -1,13 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package pe.senati.clinica.view.cita;
 
-/**
- *
- * @author PC-11
- */
+import javax.swing.table.DefaultTableModel;
+import java.util.List;
+import pe.senati.clinica.model.Cita;
+
+
 public class FrmCitas extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FrmCitas.class.getName());
@@ -17,6 +14,8 @@ public class FrmCitas extends javax.swing.JFrame {
      */
     public FrmCitas() {
         initComponents();
+        limpiarCampos();
+        listarCitasEnTabla();
     }
 
     /**
@@ -27,113 +26,248 @@ public class FrmCitas extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jTextField3 = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jTextField4 = new javax.swing.JTextField();
+        jTextField5 = new javax.swing.JTextField();
         jTextField1 = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
-        jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText("FORMULARIO DE CITAS");
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable1);
 
-        jLabel2.setText("ID Paciente:");
-
-        jTextField1.setText("jTextField1");
-
-        jLabel3.setText("ID Médico:");
-
-        jTextField2.setText("jTextField2");
-
-        jLabel4.setText("Fecha (AAAA-MM-DD):");
-
-        jTextField3.setText("jTextField3");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.ipadx = 617;
+        gridBagConstraints.ipady = 255;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(18, 6, 6, 6);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
 
         jLabel5.setText("Hora (HH:MM):");
 
-        jTextField4.setText("jTextField4");
-
-        jLabel6.setText("Motivo de la Cita:");
-
-        jTextField5.setText("jTextField5");
+        jLabel1.setText("FORMULARIO DE CITAS");
 
         jButton1.setText("Guardar Cita");
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(132, 132, 132)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(31, 31, 31)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel6))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(101, 101, 101)
-                        .addComponent(jButton1)))
-                .addContainerGap(142, Short.MAX_VALUE))
+        jLabel3.setText("ID Médico:");
+
+        jLabel2.setText("ID Paciente:");
+
+        jLabel4.setText("Fecha (AAAA-MM-DD):");
+
+        jLabel6.setText("Motivo de la Cita:");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jButton1)
+                            .addComponent(jLabel1))
+                        .addGap(184, 184, 184))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 226, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6))
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jButton1)
-                .addContainerGap(85, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = -6;
+        gridBagConstraints.insets = new java.awt.Insets(12, 158, 0, 0);
+        getContentPane().add(jPanel1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        try {
+            // 1. Validar que no haya campos vacíos en la interfaz
+            if (jTextField1.getText().trim().isEmpty() || jTextField2.getText().trim().isEmpty() ||
+                jTextField3.getText().trim().isEmpty() || jTextField4.getText().trim().isEmpty()) {
+                
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "Por favor, complete todos los campos obligatorios.", 
+                    "Campos Vacíos", javax.swing.JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
+            // 2. Mapear los datos de la interfaz al modelo Cita
+            pe.senati.clinica.model.Cita cita = new pe.senati.clinica.model.Cita();
+            cita.setIdPaciente(Integer.parseInt(jTextField1.getText().trim()));
+            cita.setIdMedico(Integer.parseInt(jTextField2.getText().trim()));
+            cita.setFechaCita(jTextField3.getText().trim());
+            cita.setHoraCita(jTextField4.getText().trim());
+            cita.setMotivo(jTextField5.getText().trim());
+
+            // 3. Llamar al servicio para procesar el registro
+            pe.senati.clinica.service.CitaService service = new pe.senati.clinica.service.CitaService();
+            boolean exito = service.agendarNuevaCita(cita);
+
+            // 4. Mostrar respuesta según el resultado
+            if (exito) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "¡Cita registrada con éxito en el sistema!", 
+                    "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                limpiarCampos();
+                listarCitasEnTabla();
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "No se pudo registrar la cita. Verifique la consola o el formato de los datos.", 
+                    "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (NumberFormatException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Los identificadores de Paciente y Médico deben ser valores numéricos enteros.", 
+                "Error de Formato", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }                                        
+    
+     // Este método se encarga de vaciar los campos después de guardar con éxito
+    private void limpiarCampos() {
+        jTextField1.setText("");
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+    }//GEN-LAST:event_jButton1ActionPerformed
+    
+    public void listarCitasEnTabla() {
+        String[] columnas = {"ID", "Fecha", "Hora", "Motivo", "Estado", "ID Paciente", "ID Médico"};
+        DefaultTableModel modelo = new DefaultTableModel(null, columnas);
+        
+        try {
+            pe.senati.clinica.service.CitaService service = new pe.senati.clinica.service.CitaService();
+            List<Cita> lista = service.obtenerTodasLasCitas();
+            
+            Object[] fila = new Object[7];
+            for (Cita cita : lista) {
+                fila[0] = cita.getIdCita();
+                fila[1] = cita.getFechaCita();
+                fila[2] = cita.getHoraCita();
+                fila[3] = cita.getMotivo();
+                fila[4] = cita.getEstado();
+                fila[5] = cita.getIdPaciente();
+                fila[6] = cita.getIdMedico();
+                modelo.addRow(fila);
+            }
+            
+            jTable1.setModel(modelo);
+            jTable1.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+            
+            // 2. Ajustar el ancho de cada columna según su contenido de forma automática
+            for (int column = 0; column < jTable1.getColumnCount(); column++) {
+                javax.swing.table.TableColumn tableColumn = jTable1.getColumnModel().getColumn(column);
+                int preferredWidth = tableColumn.getMinWidth();
+                int maxWidth = tableColumn.getMaxWidth();
+                
+                // Revisar el ancho del encabezado
+                javax.swing.table.TableCellRenderer headerRenderer = jTable1.getTableHeader().getDefaultRenderer();
+                java.awt.Component headerComp = headerRenderer.getTableCellRendererComponent(jTable1, tableColumn.getHeaderValue(), false, false, 0, column);
+                preferredWidth = Math.max(preferredWidth, headerComp.getPreferredSize().width + 15);
+                
+                // Revisar el ancho de cada fila en esa columna
+                for (int row = 0; row < jTable1.getRowCount(); row++) {
+                    javax.swing.table.TableCellRenderer cellRenderer = jTable1.getCellRenderer(row, column);
+                    java.awt.Component c = jTable1.prepareRenderer(cellRenderer, row, column);
+                    preferredWidth = Math.max(preferredWidth, c.getPreferredSize().width + 15);
+                }
+                
+                // Aplicar el tamaño óptimo calculado
+                tableColumn.setPreferredWidth(preferredWidth);
+            }
+            
+        } catch (Exception e) {
+            System.out.println("Error al cargar la tabla de citas: " + e.getMessage());
+        }
+    }
+
+    
     /**
      * @param args the command line arguments
      */
@@ -167,6 +301,9 @@ public class FrmCitas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
