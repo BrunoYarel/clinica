@@ -9,8 +9,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>17</maven.compiler.release>
-        <!-- Dejamos Medico como clase principal de arranque en tus pruebas locales -->
-        <exec.mainClass>com.mycompany.clinica.Medico</exec.mainClass>
+        <!-- AQUÍ SE ENLAZA EL ARRANQUE DE MEDICAMENTOS -->
+        <exec.mainClass>com.mycompany.clinica.Medicamento</exec.mainClass>
     </properties>
 
     <dependencies>
