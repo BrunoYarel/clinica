@@ -1,8 +1,11 @@
 package view;
 
+import com.mycompany.clinica.vista.FrmPrincipal;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.*;
 import service.Sesion;
 
@@ -191,10 +194,33 @@ public class MenuPrincipal extends JFrame {
 
     /** CLIC EN UNA TARJETA: aquí cada compañero abre la ventana de su módulo. */
     private void abrirModulo(String modulo) {
-        // Ejemplo para cuando exista la ventana:
-        //   if (modulo.equals("Pacientes")) { new VentanaPacientes().setVisible(true); return; }
+        if (modulo.equals("Pacientes")) {
+            abrirModuloPacientes();
+            return;
+        }
+        // Citas y Atenciones aún no tienen ventana: cuando existan, se conectan aquí igual que Pacientes.
         JOptionPane.showMessageDialog(this, "El módulo de " + modulo + " estará disponible pronto.",
                 modulo, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /**
+     * MÓDULO PACIENTES (gestión de pacientes e historial clínico).
+     * Abre la ventana del módulo y oculta el menú; al cerrar el módulo, el menú reaparece
+     * con la misma sesión. FrmPrincipal no se modificó: como se diseñó para ejecutarse sola,
+     * al cerrarse terminaba toda la aplicación (EXIT_ON_CLOSE). Aquí, al abrirla desde el menú,
+     * se cambia únicamente ese comportamiento para que cierre solo esa ventana.
+     */
+    private void abrirModuloPacientes() {
+        FrmPrincipal modulo = new FrmPrincipal();
+        modulo.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        modulo.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                MenuPrincipal.this.setVisible(true);   // vuelve el menú principal
+            }
+        });
+        modulo.setVisible(true);
+        setVisible(false);
     }
 
     /** BOTÓN CAMBIAR CONTRASEÑA: abre el diálogo (modal, bloquea el menú hasta cerrarlo). */
