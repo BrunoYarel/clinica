@@ -191,11 +191,20 @@ public class MenuPrincipal extends JFrame {
 
     /** CLIC EN UNA TARJETA: aquí cada compañero abre la ventana de su módulo. */
     private void abrirModulo(String modulo) {
-        // Ejemplo para cuando exista la ventana:
-        //   if (modulo.equals("Pacientes")) { new VentanaPacientes().setVisible(true); return; }
+        // --- INTEGRACIÓN DEL MÓDULO DE CITAS (ÁREA A4) ---
+        if (modulo.equals("Citas")) {
+            pe.senati.clinica.view.cita.FrmCitas ventanaCitas = new pe.senati.clinica.view.cita.FrmCitas();
+            ventanaCitas.setVisible(true);
+            return;
+        }
+        
+        // Ejemplo para cuando exista la ventana de Pacientes:
+        // if (modulo.equals("Pacientes")) { new VentanaPacientes().setVisible(true); return; }
+        
         JOptionPane.showMessageDialog(this, "El módulo de " + modulo + " estará disponible pronto.",
                 modulo, JOptionPane.INFORMATION_MESSAGE);
     }
+
 
     /** BOTÓN CAMBIAR CONTRASEÑA: abre el diálogo (modal, bloquea el menú hasta cerrarlo). */
     private void abrirCambiarPassword() {

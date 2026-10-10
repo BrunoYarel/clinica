@@ -72,6 +72,24 @@ public class CitaDAO {
         }
         return lista;
     }
+    
+    public boolean modificarEstadoCita(int idCita, String nuevoEstado) {
+        String sql = "UPDATE cita SET estado = ? WHERE id_cita = ?";
+
+        try (Connection con = getConexion(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nuevoEstado);
+            ps.setInt(2, idCita);
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al cambiar estado de la cita en BD: " + e.getMessage());
+            return false;
+        }
+    }
 }
 
 

@@ -39,6 +39,14 @@ public class CitaService {
     public List<Cita> obtenerTodasLasCitas() {
         return citaDAO.listarCitas();
     }
+    
+    public boolean actualizarEstado(int idCita, String nuevoEstado) {
+        if (idCita <= 0 || nuevoEstado == null || nuevoEstado.trim().isEmpty()) {
+            System.out.println("Error en Service: ID o estado inválido.");
+            return false;
+        }
+        return citaDAO.modificarEstadoCita(idCita, nuevoEstado);
+    }
 }
 
 
