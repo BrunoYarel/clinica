@@ -114,7 +114,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         // TODO add your handling code here:
     }//GEN-LAST:event_jMenuItem2ActionPerformed
-
+    
     /**
      * @param args the command line arguments
      */

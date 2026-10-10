@@ -105,6 +105,7 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
         btnBuscarActionPerformed(evt);    }//GEN-LAST:event_txtBuscarDniActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+<<<<<<< HEAD
         String dni = txtBuscarDni.getText().trim();
 
         if (dni.isEmpty()) {
@@ -137,6 +138,43 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
         // 3. Forzar el refresco de dimensiones de la tabla en pantalla
         tblHistorial.revalidate();
         tblHistorial.repaint();
+=======
+    String dni = txtBuscarDni.getText().trim();
+    
+    if (dni.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
+        return;
+    }
+    
+    // VARIABLES TEMPORALES DE SESIÓN (Se conectarán automáticamente con el Login de tu líder)
+    String rolActual = "Admin"; // Prueba cambiando este texto a "Médico" para verificar el filtro de seguridad
+    int idMedicoActual = 1;     // ID simulado del médico logueado en el sistema
+    
+    // Llamar al controlador enviando los tres parámetros obligatorios
+    com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
+    javax.swing.table.DefaultTableModel modeloResultados = controlador.consultarHistorialClinico(dni, idMedicoActual, rolActual);
+    
+    if (modeloResultados.getRowCount() == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron registros de atención permitidos para el DNI: " + dni);
+    }
+    
+    // 1. Cargar los datos filtrados en la tabla
+    tblHistorial.setModel(modeloResultados);
+    
+    // 2. Aplicar renderizador multilínea para que el texto largo no se corte
+    try {
+        com.mycompany.clinica.utilidades.AjustarCelda adaptador = new com.mycompany.clinica.utilidades.AjustarCelda();
+        for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
+            tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
+        }
+    } catch (Exception e) {
+        System.out.println("Nota: No se cargó el adaptador de celdas.");
+    }
+    
+    // 3. Refrescar las dimensiones en la pantalla
+    tblHistorial.revalidate();
+    tblHistorial.repaint();
+>>>>>>> fddc26e (Modulo A3 finalizado con control de accesos y filtros por rol)
     }//GEN-LAST:event_btnBuscarActionPerformed
 
 
