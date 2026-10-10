@@ -105,38 +105,41 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
 btnBuscarActionPerformed(evt);    }//GEN-LAST:event_txtBuscarDniActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        String dni = txtBuscarDni.getText().trim();
-        
-        if (dni.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
-            return;
+    String dni = txtBuscarDni.getText().trim();
+    
+    if (dni.isEmpty()) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
+        return;
+    }
+    
+    // VARIABLES TEMPORALES DE SESIÓN (Se conectarán automáticamente con el Login de tu líder)
+    String rolActual = "Admin"; // Prueba cambiando este texto a "Médico" para verificar el filtro de seguridad
+    int idMedicoActual = 1;     // ID simulado del médico logueado en el sistema
+    
+    // Llamar al controlador enviando los tres parámetros obligatorios
+    com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
+    javax.swing.table.DefaultTableModel modeloResultados = controlador.consultarHistorialClinico(dni, idMedicoActual, rolActual);
+    
+    if (modeloResultados.getRowCount() == 0) {
+        javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron registros de atención permitidos para el DNI: " + dni);
+    }
+    
+    // 1. Cargar los datos filtrados en la tabla
+    tblHistorial.setModel(modeloResultados);
+    
+    // 2. Aplicar renderizador multilínea para que el texto largo no se corte
+    try {
+        com.mycompany.clinica.utilidades.AjustarCelda adaptador = new com.mycompany.clinica.utilidades.AjustarCelda();
+        for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
+            tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
         }
-        
-        // Llamar al controlador para procesar la consulta en XAMPP
-        com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
-        javax.swing.table.DefaultTableModel modeloResultados = controlador.consultarHistorialClinico(dni);
-        
-        // Verificar si se encontraron registros médicos
-        if (modeloResultados.getRowCount() == 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron registros de atención para el DNI: " + dni);
-        }
-        
-        // 1. Actualizar la tabla con la información real
-        tblHistorial.setModel(modeloResultados);
-        
-        // 2. Aplicar el renderizador multilínea para que el texto baje automáticamente
-        try {
-            com.mycompany.clinica.utilidades.AjustarCelda adaptador = new com.mycompany.clinica.utilidades.AjustarCelda();
-            for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
-                tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
-            }
-        } catch (Exception e) {
-            System.out.println("Nota: No se pudo cargar el adaptador visual, se usará la tabla estándar.");
-        }
-        
-        // 3. Forzar el refresco de dimensiones de la tabla en pantalla
-        tblHistorial.revalidate();
-        tblHistorial.repaint();
+    } catch (Exception e) {
+        System.out.println("Nota: No se cargó el adaptador de celdas.");
+    }
+    
+    // 3. Refrescar las dimensiones en la pantalla
+    tblHistorial.revalidate();
+    tblHistorial.repaint();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
 
