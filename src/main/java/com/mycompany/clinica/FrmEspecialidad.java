@@ -2,8 +2,15 @@ package com.mycompany.clinica;
 
 public class FrmEspecialidad extends javax.swing.JInternalFrame {
 
+    private FrmMedico frmMedicoPadre;
+
     public FrmEspecialidad() {
         initComponents();
+    }
+
+    public FrmEspecialidad(FrmMedico frmMedicoPadre) {
+        initComponents();
+        this.frmMedicoPadre = frmMedicoPadre;
     }
 
     @SuppressWarnings("unchecked")
@@ -19,9 +26,9 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Registrar Especialidad Médica");
 
         jLabel1.setText("Nombre:");
-
         jLabel2.setText("Descripción:");
 
         btnGuardar.setText("GUARDAR");
@@ -64,7 +71,7 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
         );
 
         pack();
-    }                       
+    }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {                                           
         String nombre = txtNombre.getText().trim();
@@ -75,7 +82,7 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
             return;
         }
 
-        // Parámetros de prueba secuenciales (Puertos y claves típicas de XAMPP local)
+        // Corregido con corchetes [] para que compile en Java
         String[] urls = {
             "jdbc:mysql://localhost:3306/clinica?serverTimezone=UTC&useSSL=false",
             "jdbc:mysql://localhost:3307/clinica?serverTimezone=UTC&useSSL=false"
@@ -84,7 +91,6 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
 
         java.sql.Connection con = null;
 
-        // Intentar conectar probando todas las combinaciones posibles directamente aquí
         for (String url : urls) {
             for (String clave : claves) {
                 try {
@@ -98,13 +104,11 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
             if (con != null) break;
         }
 
-        // Si fallaron todas las conexiones automáticas
         if (con == null) {
             javax.swing.JOptionPane.showMessageDialog(this, "Error: No se pudo conectar a MySQL. Verifica tu XAMPP.");
             return;
         }
 
-        // Sentencia de inserción apuntando directamente a tu tabla "especialidad"
         String sql = "INSERT INTO especialidad (nombre, descripcion) VALUES (?, ?)";
 
         try (java.sql.PreparedStatement ps = con.prepareStatement(sql)) {
@@ -116,7 +120,13 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
             txtNombre.setText("");
             txtDescripcion.setText("");
             
+            if (frmMedicoPadre != null) {
+                frmMedicoPadre.cargarComboEspecialidades();
+            }
+            
             con.close();
+            this.dispose(); 
+            
         } catch (java.sql.SQLException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Error de base de datos al insertar: " + e.getMessage());
         }
