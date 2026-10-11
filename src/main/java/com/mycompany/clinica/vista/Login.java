@@ -99,6 +99,7 @@ public class Login extends JFrame {
 
     /** BOTÓN INGRESAR: valida los datos contra la base de datos y abre el menú principal. */
     private void entrar() {
+        
         lblError.setText(" ");
         String usuario = txtUsuario.getText().trim();
         String password = new String(txtPassword.getPassword());

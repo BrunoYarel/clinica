@@ -208,6 +208,10 @@ public class MenuPrincipal extends JFrame {
             abrirModuloMedicos();
             return;
         }
+        if (modulo.equals("Citas")) {
+            abrirModuloCitas();
+            return;
+        }
         // Citas y Atenciones aún no tienen ventana: cuando existan, se conectan aquí igual que Pacientes
         // y Especialidades (un método abrirModuloXxx() que llame a abrirModuloEn(...)).
         JOptionPane.showMessageDialog(this, "El módulo de " + modulo + " estará disponible pronto.",
@@ -227,6 +231,10 @@ public class MenuPrincipal extends JFrame {
     /** MÓDULO MÉDICOS (registro de médicos y su especialidad): ventana MDI de Medico. */
     private void abrirModuloMedicos() {
         abrirModuloEn(Medico.abrirVentana());
+    }
+    /** MÓDULO CITAS (agenda de citas, área A4): ventana FrmCitas. */
+    private void abrirModuloCitas() {
+        abrirModuloEn(new pe.senati.clinica.view.cita.FrmCitas());
     }
 
     /**
