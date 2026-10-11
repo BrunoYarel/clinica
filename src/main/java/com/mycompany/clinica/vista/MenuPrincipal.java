@@ -1,5 +1,6 @@
 package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.modelo.Medico;
 import com.mycompany.clinica.servicio.Sesion;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -128,6 +129,7 @@ public class MenuPrincipal extends JFrame {
             tarjetas.add(crearTarjeta("Pacientes", "Datos de pacientes", "P", new Color(13, 148, 136)));
             tarjetas.add(crearTarjeta("Citas", "Agenda de citas", "C", new Color(37, 99, 235)));
             tarjetas.add(crearTarjeta("Especialidades", "Registro de especialidades", "E", new Color(217, 119, 6)));
+            tarjetas.add(crearTarjeta("Médicos", "Registro de médicos", "M", new Color(219, 39, 119)));
         }
         if (Sesion.esMedico()) {
             tarjetas.add(crearTarjeta("Atenciones", "Consultas y recetas", "A", new Color(124, 58, 237)));
@@ -202,6 +204,10 @@ public class MenuPrincipal extends JFrame {
             abrirModuloEspecialidades();
             return;
         }
+        if (modulo.equals("Médicos")) {
+            abrirModuloMedicos();
+            return;
+        }
         // Citas y Atenciones aún no tienen ventana: cuando existan, se conectan aquí igual que Pacientes
         // y Especialidades (un método abrirModuloXxx() que llame a abrirModuloEn(...)).
         JOptionPane.showMessageDialog(this, "El módulo de " + modulo + " estará disponible pronto.",
@@ -216,6 +222,11 @@ public class MenuPrincipal extends JFrame {
     /** MÓDULO ESPECIALIDADES (registro de especialidades): ventana MDI de Especialidad. */
     private void abrirModuloEspecialidades() {
         abrirModuloEn(Especialidad.abrirVentana());
+    }
+
+    /** MÓDULO MÉDICOS (registro de médicos y su especialidad): ventana MDI de Medico. */
+    private void abrirModuloMedicos() {
+        abrirModuloEn(Medico.abrirVentana());
     }
 
     /**

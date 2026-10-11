@@ -48,98 +48,102 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
         btnBuscar.addActionListener(this::btnBuscarActionPerformed);
 
         tblHistorial.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
+                new Object [][] {
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null},
+                        {null, null, null, null}
+                },
+                new String [] {
+                        "Title 1", "Title 2", "Title 3", "Title 4"
+                }
         ));
         jScrollPane1.setViewportView(tblHistorial);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(139, 139, 139)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(176, 176, 176)
-                        .addComponent(jLabel2))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(153, 153, 153)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnBuscar)
-                            .addComponent(txtBuscarDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(7, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(139, 139, 139)
+                                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(176, 176, 176)
+                                                .addComponent(jLabel2))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(153, 153, 153)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(btnBuscar)
+                                                        .addComponent(txtBuscarDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addContainerGap()
+                                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 381, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap(7, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jLabel1)
-                .addGap(17, 17, 17)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(txtBuscarDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(btnBuscar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(17, 17, 17)
+                                .addComponent(jLabel1)
+                                .addGap(17, 17, 17)
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtBuscarDni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnBuscar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtBuscarDniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscarDniActionPerformed
-btnBuscarActionPerformed(evt);    }//GEN-LAST:event_txtBuscarDniActionPerformed
+        btnBuscarActionPerformed(evt);    }//GEN-LAST:event_txtBuscarDniActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-    String dni = txtBuscarDni.getText().trim();
-    
-    if (dni.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
-        return;
-    }
-    
-    // VARIABLES TEMPORALES DE SESIÓN (Se conectarán automáticamente con el Login de tu líder)
-    String rolActual = "Admin"; // Prueba cambiando este texto a "Médico" para verificar el filtro de seguridad
-    int idMedicoActual = 1;     // ID simulado del médico logueado en el sistema
-    
-    // Llamar al controlador enviando los tres parámetros obligatorios
-    com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
-    javax.swing.table.DefaultTableModel modeloResultados = controlador.consultarHistorialClinico(dni, idMedicoActual, rolActual);
-    
-    if (modeloResultados.getRowCount() == 0) {
-        javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron registros de atención permitidos para el DNI: " + dni);
-    }
-    
-    // 1. Cargar los datos filtrados en la tabla
-    tblHistorial.setModel(modeloResultados);
-    
-    // 2. Aplicar renderizador multilínea para que el texto largo no se corte
-    try {
-        com.mycompany.clinica.utilidades.AjustarCelda adaptador = new com.mycompany.clinica.utilidades.AjustarCelda();
-        for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
-            tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
+        String dni = txtBuscarDni.getText().trim();
+
+        if (dni.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
+            return;
         }
-    } catch (Exception e) {
-        System.out.println("Nota: No se cargó el adaptador de celdas.");
-    }
-    
-    // 3. Refrescar las dimensiones en la pantalla
-    tblHistorial.revalidate();
-    tblHistorial.repaint();
+
+        // DATOS DE LA SESIÓN: salen del login (clase Sesion), el mismo que usa el resto del sistema
+        if (!com.mycompany.clinica.servicio.Sesion.estaActiva()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Debe iniciar sesión para consultar el historial clínico.");
+            return;
+        }
+        String rolActual = com.mycompany.clinica.servicio.Sesion.getRol();          // "Admin", "Medico" o "Recepcionista"
+        int idMedicoActual = com.mycompany.clinica.servicio.Sesion.getIdUsuario();  // solo se usa si el rol es Médico (filtro del controlador)
+
+        // Llamar al controlador enviando los tres parámetros obligatorios
+        com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
+        javax.swing.table.DefaultTableModel modeloResultados = controlador.consultarHistorialClinico(dni, idMedicoActual, rolActual);
+
+        if (modeloResultados.getRowCount() == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron registros de atención permitidos para el DNI: " + dni);
+        }
+
+        // 1. Cargar los datos filtrados en la tabla
+        tblHistorial.setModel(modeloResultados);
+
+        // 2. Aplicar renderizador multilínea para que el texto largo no se corte
+        try {
+            com.mycompany.clinica.utilidades.AjustarCelda adaptador = new com.mycompany.clinica.utilidades.AjustarCelda();
+            for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
+                tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
+            }
+        } catch (Exception e) {
+            System.out.println("Nota: No se cargó el adaptador de celdas.");
+        }
+
+        // 3. Refrescar las dimensiones en la pantalla
+        tblHistorial.revalidate();
+        tblHistorial.repaint();
     }//GEN-LAST:event_btnBuscarActionPerformed
 
 

@@ -13,6 +13,17 @@ import java.awt.Font;
 public class Medico {
 
     public static void main(String[] args) {
+        abrirVentana();
+    }
+
+    /**
+     * Crea y muestra la ventana MDI de Médicos (formulario padre + FrmMedico).
+     * La usan main() para probarla sola y MenuPrincipal para abrirla desde el sistema
+     * (igual que Especialidad.abrirVentana()).
+     *
+     * @return la ventana principal creada, para que quien la abre pueda controlar su cierre
+     */
+    public static JFrame abrirVentana() {
         // 1. Crear el JFrame principal (Formulario Padre MDI)
         JFrame ventanaPrincipal = new JFrame("Gestión de Médicos - Vista de Desarrollo");
         ventanaPrincipal.setExtendedState(JFrame.MAXIMIZED_BOTH); // Pantalla completa
@@ -28,30 +39,31 @@ public class Medico {
         // 4. Instanciar e integrar tu JInternalFrame de Médicos
         FrmMedico frm = new FrmMedico();
         dskPrincipal.add(frm);
-        
+
         // 5. Ajustar propiedades visuales automáticas
         ajustarCamposDeTexto(frm);
-        
+
         // Aplicar el TitledBorder para incrustar el título "MÉDICOS" en el contorno azul
         LineBorder bordeAzul = new LineBorder(new Color(120, 160, 220), 2);
         TitledBorder tituloBorde = new TitledBorder(
-            bordeAzul, 
-            "REGISTRO DE MÉDICOS", 
-            TitledBorder.CENTER, 
-            TitledBorder.TOP, 
-            new Font("Tahoma", Font.BOLD, 12), 
-            Color.BLACK
+                bordeAzul,
+                "REGISTRO DE MÉDICOS",
+                TitledBorder.CENTER,
+                TitledBorder.TOP,
+                new Font("Tahoma", Font.BOLD, 12),
+                Color.BLACK
         );
         frm.setBorder(tituloBorde);
-        
-        // Asignar tamaño cómodo y centrar en pantalla
-        frm.setSize(600, 550); 
+
+        // Centrar en pantalla. El tamaño lo define FrmMedico (1020x520, pensado para la tabla):
+        // antes aquí se forzaba 600x550 y la tabla de médicos quedaba aplastada.
         int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
         int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
         frm.setLocation(Math.max(0, x), Math.max(0, y));
-        
+
         // 6. Mostrar el formulario hijo
         frm.setVisible(true);
+        return ventanaPrincipal;
     }
 
     private static void ajustarCamposDeTexto(Container contenedor) {
