@@ -2,8 +2,15 @@ package com.mycompany.clinica.vista;
 
 public class FrmEspecialidad extends javax.swing.JInternalFrame {
 
+    private FrmMedico frmMedicoPadre;
+
     public FrmEspecialidad() {
         initComponents();
+    }
+
+    public FrmEspecialidad(FrmMedico frmMedicoPadre) {
+        initComponents();
+        this.frmMedicoPadre = frmMedicoPadre;
     }
 
     @SuppressWarnings("unchecked")
@@ -95,6 +102,11 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
             javax.swing.JOptionPane.showMessageDialog(this, "¡Especialidad guardada correctamente!");
             txtNombre.setText("");
             txtDescripcion.setText("");
+
+            // Avisa al formulario de médicos para que recargue el combo de especialidades
+            if (frmMedicoPadre != null) {
+                frmMedicoPadre.cargarComboEspecialidades();
+            }
         } catch (java.sql.SQLException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Error de base de datos al insertar: " + e.getMessage());
         }
