@@ -1,4 +1,4 @@
-package pe.senati.clinica.model;
+package com.mycompany.clinica.modelo;
 
 public class Cita {
     private int idCita;
@@ -46,4 +46,3 @@ public class Cita {
     public int getIdMedico() { return idMedico; }
     public void setIdMedico(int idMedico) { this.idMedico = idMedico; }
 }
-

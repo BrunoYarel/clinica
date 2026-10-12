@@ -1,6 +1,6 @@
 package com.mycompany.clinica.vista;
 
-import com.mycompany.clinica.modelo.Medico;
+import com.mycompany.clinica.servicio.Permisos;
 import com.mycompany.clinica.servicio.Sesion;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -61,9 +61,15 @@ public class MenuPrincipal extends JFrame {
 
         JPanel opciones = new JPanel(new GridLayout(0, 1, 0, 6));
         opciones.setOpaque(false);
+        if (Permisos.puedeVer(Permisos.Pantalla.MI_AGENDA)) {    // el médico no tiene tarjetas: su otro módulo va aquí
+            opciones.add(Estilo.texto("  MÓDULOS", Font.BOLD, 11, new Color(100, 116, 139)));
+            JButton btnHistorial = Estilo.botonMenu("Historial clínico");
+            btnHistorial.addActionListener(e -> abrirModulo("Historial"));
+            opciones.add(btnHistorial);
+        }
         opciones.add(Estilo.texto("  CUENTA", Font.BOLD, 11, new Color(100, 116, 139)));
         opciones.add(btnCambiarPassword);
-        if (Sesion.esAdmin()) {                 // solo el administrador puede crear perfiles
+        if (Permisos.puedeGestionarUsuarios()) {                 // solo el administrador puede crear perfiles
             opciones.add(btnCrearUsuario);
         }
 
@@ -106,6 +112,11 @@ public class MenuPrincipal extends JFrame {
     //  CONTENIDO (derecha)
     // =====================================================================
     private JPanel crearContenido() {
+        // Inicio del médico = Mi agenda (en lugar del banner y las tarjetas); la barra lateral se conserva
+        if (Permisos.puedeVer(Permisos.Pantalla.MI_AGENDA)) {
+            return new AgendaPanel();
+        }
+
         JPanel contenido = new JPanel(new BorderLayout(0, 26));
         contenido.setBackground(Estilo.FONDO);
         contenido.setBorder(BorderFactory.createEmptyBorder(28, 32, 28, 32));
@@ -125,14 +136,40 @@ public class MenuPrincipal extends JFrame {
         JPanel tarjetas = new JPanel(new GridLayout(0, 3, 20, 20));
         tarjetas.setOpaque(false);
 
-        if (Sesion.esAdmin() || Sesion.esRecepcionista()) {
-            tarjetas.add(crearTarjeta("Pacientes", "Datos de pacientes", "P", new Color(13, 148, 136)));
-            tarjetas.add(crearTarjeta("Citas", "Agenda de citas", "C", new Color(37, 99, 235)));
-            tarjetas.add(crearTarjeta("Especialidades", "Registro de especialidades", "E", new Color(217, 119, 6)));
-            tarjetas.add(crearTarjeta("Médicos", "Registro de médicos", "M", new Color(219, 39, 119)));
-        }
-        if (Sesion.esMedico()) {
-            tarjetas.add(crearTarjeta("Atenciones", "Consultas y recetas", "A", new Color(124, 58, 237)));
+        // Una tarjeta por cada pantalla que el rol puede ver (la matriz vive en Permisos)
+        for (Permisos.Pantalla pantalla : Permisos.pantallasDelRol()) {
+            String titulo = pantalla.getTitulo();
+            switch (pantalla) {
+                case PACIENTES:
+                    tarjetas.add(crearTarjeta(titulo, "Datos de pacientes", "P", new Color(13, 148, 136)));
+                    break;
+                case CITAS:
+                    tarjetas.add(crearTarjeta(titulo, "Agenda de citas", "C", new Color(37, 99, 235)));
+                    break;
+                case ESPECIALIDADES:
+                    tarjetas.add(crearTarjeta(titulo, "Registro de especialidades", "E", new Color(217, 119, 6)));
+                    break;
+                case MEDICOS:
+                    tarjetas.add(crearTarjeta(titulo, "Registro de médicos", "M", new Color(219, 39, 119)));
+                    break;
+                case MEDICAMENTOS:
+                    tarjetas.add(crearTarjeta(titulo, "Catálogo de medicamentos", "Rx", new Color(22, 163, 74)));
+                    break;
+                case HISTORIAL:
+                    tarjetas.add(crearTarjeta(titulo, "Historial clínico (consulta)", "H", new Color(8, 145, 178)));
+                    break;
+                case REPORTES:
+                    tarjetas.add(crearTarjeta(titulo, "Reportes del sistema", "R", new Color(79, 70, 229)));
+                    break;
+                case USUARIOS:
+                    tarjetas.add(crearTarjeta(titulo, "Gestión de usuarios", "U", new Color(71, 85, 105)));
+                    break;
+                case MI_AGENDA:
+                    tarjetas.add(crearTarjeta(titulo, "Tus citas y atenciones", "A", new Color(124, 58, 237)));
+                    break;
+                default:
+                    break;   // INICIO es este mismo menú: no lleva tarjeta
+            }
         }
 
         JPanel envoltura = new JPanel(new BorderLayout());   // evita que las tarjetas se estiren hacia abajo
@@ -196,6 +233,12 @@ public class MenuPrincipal extends JFrame {
 
     /** CLIC EN UNA TARJETA: aquí cada compañero abre la ventana de su módulo. */
     private void abrirModulo(String modulo) {
+        Permisos.Pantalla pantalla = Permisos.Pantalla.deTitulo(modulo);
+        if (pantalla != null && !Permisos.puedeVer(pantalla)) {
+            JOptionPane.showMessageDialog(this, "No tiene permiso para acceder a este módulo.",
+                    modulo, JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         if (modulo.equals("Pacientes")) {
             abrirModuloPacientes();
             return;
@@ -212,8 +255,21 @@ public class MenuPrincipal extends JFrame {
             abrirModuloCitas();
             return;
         }
-        // Citas y Atenciones aún no tienen ventana: cuando existan, se conectan aquí igual que Pacientes
-        // y Especialidades (un método abrirModuloXxx() que llame a abrirModuloEn(...)).
+        if (modulo.equals("Historial")) {
+            abrirModuloEn(VentanaMdi.abrir("Historial clínico", "HISTORIAL CLÍNICO",
+                    new FrmHistorial(), null));
+            return;
+        }
+        if (modulo.equals("Medicamentos")) {
+            abrirModuloMedicamentos();
+            return;
+        }
+        if (modulo.equals("Usuarios")) {
+            abrirModuloEn(new FrmUsuarios());
+            return;
+        }
+        // Reportes aún no tiene ventana: cuando exista, se conecta aquí
+        // igual que los demás módulos (un método abrirModuloXxx() que llame a abrirModuloEn(...)).
         JOptionPane.showMessageDialog(this, "El módulo de " + modulo + " estará disponible pronto.",
                 modulo, JOptionPane.INFORMATION_MESSAGE);
     }
@@ -223,18 +279,28 @@ public class MenuPrincipal extends JFrame {
         abrirModuloEn(new FrmPrincipal());
     }
 
-    /** MÓDULO ESPECIALIDADES (registro de especialidades): ventana MDI de Especialidad. */
+    /** MÓDULO ESPECIALIDADES (registro de especialidades): FrmEspecialidad dentro de una ventana MDI. */
     private void abrirModuloEspecialidades() {
-        abrirModuloEn(Especialidad.abrirVentana());
+        abrirModuloEn(VentanaMdi.abrir("Gestión de Especialidades", "REGISTRO DE ESPECIALIDADES",
+                new FrmEspecialidad(), new Dimension(600, 500)));
     }
 
-    /** MÓDULO MÉDICOS (registro de médicos y su especialidad): ventana MDI de Medico. */
+    /** MÓDULO MÉDICOS (registro de médicos y su especialidad): FrmMedico dentro de una ventana MDI. */
     private void abrirModuloMedicos() {
-        abrirModuloEn(Medico.abrirVentana());
+        // FrmMedico define su propio tamaño (1020x520, pensado para la tabla)
+        abrirModuloEn(VentanaMdi.abrir("Gestión de Médicos", "REGISTRO DE MÉDICOS",
+                new FrmMedico(), null));
     }
+
+    /** MÓDULO MEDICAMENTOS (catálogo para las recetas): FrmMedicamento dentro de una ventana MDI. */
+    private void abrirModuloMedicamentos() {
+        abrirModuloEn(VentanaMdi.abrir("Gestión de Medicamentos", "CATÁLOGO DE MEDICAMENTOS",
+                new FrmMedicamento(), null));
+    }
+
     /** MÓDULO CITAS (agenda de citas, área A4): ventana FrmCitas. */
     private void abrirModuloCitas() {
-        abrirModuloEn(new pe.senati.clinica.view.cita.FrmCitas());
+        abrirModuloEn(new FrmCitas());
     }
 
     /**

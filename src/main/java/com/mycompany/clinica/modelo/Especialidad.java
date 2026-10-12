@@ -1,7 +1,7 @@
 package com.mycompany.clinica.modelo;
 
 public class Especialidad {
-    private int id_especialidad;
+    private int idEspecialidad;
     private String nombre;
     private String descripcion;
 
@@ -10,18 +10,17 @@ public class Especialidad {
     }
 
     // Constructor cargado para el ComboBox
-    public Especialidad(int id_especialidad, String nombre) {
-        this.id_especialidad = id_especialidad;
+    public Especialidad(int idEspecialidad, String nombre) {
+        this.idEspecialidad = idEspecialidad;
         this.nombre = nombre;
     }
 
-    // Método que necesita FrmMedico para guardar en la Base de Datos
-    public int getId() {
-        return id_especialidad;
+    public int getIdEspecialidad() {
+        return idEspecialidad;
     }
 
-    public void setId(int id_especialidad) {
-        this.id_especialidad = id_especialidad;
+    public void setIdEspecialidad(int idEspecialidad) {
+        this.idEspecialidad = idEspecialidad;
     }
 
     public String getNombre() {
@@ -46,4 +45,3 @@ public class Especialidad {
         return nombre;
     }
 }
-

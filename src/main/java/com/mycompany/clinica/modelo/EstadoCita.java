@@ -1,8 +1,9 @@
-package pe.senati.clinica.model;
+package com.mycompany.clinica.modelo;
 
 public enum EstadoCita {
     PENDIENTE("Pendiente"),
     PROGRAMADA("Programada"),
+    EN_ESPERA("En Espera"),
     ATENDIDA("Atendida"),
     CANCELADA("Cancelada");
 
@@ -16,5 +17,3 @@ public enum EstadoCita {
         return valor;
     }
 }
-
-

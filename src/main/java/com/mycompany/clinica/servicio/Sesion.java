@@ -15,6 +15,7 @@ public final class Sesion {
     public static final String RECEPCIONISTA = "Recepcionista";
 
     private static int idUsuario;
+    private static int idMedico;
     private static String username;
     private static String rol;
     private static boolean activa;
@@ -23,14 +24,20 @@ public final class Sesion {
     }
 
     public static void iniciar(int id, String usuario, String rolBD) {
+        iniciar(id, usuario, rolBD, 0);
+    }
+
+    public static void iniciar(int id, String usuario, String rolBD, int idMedico) {
         idUsuario = id;
         username = usuario;
         rol = normalizar(rolBD);
+        Sesion.idMedico = idMedico;
         activa = true;
     }
 
     public static void cerrar() {
         idUsuario = 0;
+        idMedico = 0;
         username = null;
         rol = null;
         activa = false;
@@ -42,6 +49,11 @@ public final class Sesion {
 
     public static int getIdUsuario() {
         return idUsuario;
+    }
+
+    /** id_medico vinculado al usuario (0 si no es médico o no está vinculado). */
+    public static int getIdMedico() {
+        return idMedico;
     }
 
     public static String getUsername() {

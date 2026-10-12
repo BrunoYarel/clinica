@@ -1,5 +1,8 @@
 package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.dao.MedicoDAO;
+import com.mycompany.clinica.modelo.Medico;
+import com.mycompany.clinica.servicio.Permisos;
 import com.mycompany.clinica.servicio.Sesion;
 import com.mycompany.clinica.servicio.UsuarioService;
 import java.awt.*;
@@ -7,6 +10,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 /**
@@ -23,9 +28,14 @@ public class NuevoUsuario extends JFrame {
     // Opciones del combo y su valor exacto en el ENUM de la base de datos (mismo orden)
     private static final String[] ROLES_MOSTRADOS = {"Seleccione un rol...", "Administrador", "Recepcionista", "Médico"};
     private static final String[] ROLES_BD = {"", Sesion.ADMIN, Sesion.RECEPCIONISTA, Sesion.MEDICO};
+    private static final String OPCION_MEDICO = "Seleccione un médico...";
 
     private JTextField txtNombre;
     private JComboBox<String> cbxRol;
+    private JComboBox<String> cbxMedico;
+    private JPanel panelMedico;
+    // id_medico de cada médico del combo, en el mismo orden (el índice del combo es posición + 1, por "Seleccione...")
+    private final List<Integer> idsMedicos = new ArrayList<>();
     private JPasswordField txtPasswordUsuario;
     private JPasswordField txtPasswordConfirmar;
     private JPasswordField txtPasswordAdmin;
@@ -77,9 +87,23 @@ public class NuevoUsuario extends JFrame {
 
         txtNombre = Estilo.campoTexto();
         cbxRol = Estilo.combo(ROLES_MOSTRADOS);
-        Estilo.agregar(cuerpo, dosColumnas(
+        cbxRol.addActionListener(e -> cambiarRol());
+
+        // Campo "Médico": oculto hasta que se elige el rol Médico (va dentro de la fila 0, así no se renumeran las demás)
+        cbxMedico = Estilo.combo(new String[]{OPCION_MEDICO});
+        panelMedico = new JPanel(new BorderLayout());
+        panelMedico.setOpaque(false);
+        panelMedico.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+        panelMedico.add(Estilo.campo("Médico", cbxMedico), BorderLayout.CENTER);
+        panelMedico.setVisible(false);
+
+        JPanel filaRol = new JPanel(new BorderLayout());
+        filaRol.setOpaque(false);
+        filaRol.add(dosColumnas(
                 Estilo.campo("Nombre de usuario", txtNombre),
-                Estilo.campo("Rol", cbxRol)), 0, 0);
+                Estilo.campo("Rol", cbxRol)), BorderLayout.CENTER);
+        filaRol.add(panelMedico, BorderLayout.SOUTH);
+        Estilo.agregar(cuerpo, filaRol, 0, 0);
 
         txtPasswordUsuario = Estilo.campoPassword();
         txtPasswordConfirmar = Estilo.campoPassword();
@@ -134,6 +158,57 @@ public class NuevoUsuario extends JFrame {
         return fila;
     }
 
+    /** true si el rol elegido en el combo es Médico. */
+    private boolean esRolMedico() {
+        int indice = cbxRol.getSelectedIndex();
+        return indice >= 0 && Sesion.MEDICO.equals(ROLES_BD[indice]);
+    }
+
+    /** Al cambiar el rol: con Médico se carga y muestra el combo de médico; con otro rol se oculta. */
+    private void cambiarRol() {
+        if (esRolMedico()) {
+            lblError.setText(" ");
+            cargarMedicos();
+            panelMedico.setVisible(true);
+            pack();
+        } else if (panelMedico.isVisible()) {
+            reiniciarCampoMedico();
+            lblError.setText(" ");
+        }
+    }
+
+    /** Llena el combo de médico con los médicos registrados: "Apellidos, Nombres — Especialidad (CMP)". */
+    private void cargarMedicos() {
+        List<String> etiquetas = new ArrayList<>();
+        etiquetas.add(OPCION_MEDICO);
+        idsMedicos.clear();
+        try {
+            List<Medico> medicos = new MedicoDAO().listarMedicos();
+            for (Medico m : medicos) {
+                etiquetas.add(m.getApellidos() + ", " + m.getNombres()
+                        + " — " + m.getEspecialidad() + " (" + m.getCmp() + ")");
+                idsMedicos.add(m.getIdMedico());
+            }
+            if (medicos.isEmpty()) {
+                lblError.setText("No hay médicos registrados. Regístrelo primero en el módulo Médicos.");
+            }
+        } catch (SQLException e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error al cargar los médicos", e);
+            lblError.setText("No se pudieron cargar los médicos: " + e.getMessage());
+        }
+        cbxMedico.setModel(new DefaultComboBoxModel<>(etiquetas.toArray(new String[0])));
+    }
+
+    /** Deja el combo de médico en su estado inicial (solo "Seleccione...") y lo oculta. */
+    private void reiniciarCampoMedico() {
+        idsMedicos.clear();
+        cbxMedico.setModel(new DefaultComboBoxModel<>(new String[]{OPCION_MEDICO}));
+        if (panelMedico.isVisible()) {
+            panelMedico.setVisible(false);
+            pack();
+        }
+    }
+
     /** BOTÓN LIMPIAR: solo vacía los campos (no usa la base de datos). */
     private void limpiar() {
         txtNombre.setText("");
@@ -141,12 +216,17 @@ public class NuevoUsuario extends JFrame {
         txtPasswordConfirmar.setText("");
         txtPasswordAdmin.setText("");
         cbxRol.setSelectedIndex(0);
+        reiniciarCampoMedico();
         lblError.setText(" ");
         txtNombre.requestFocus();
     }
 
     /** BOTÓN CREAR PERFIL: valida los datos, verifica al admin y guarda el usuario en la base de datos. */
     private void crear() {
+        if (!Permisos.puedeGestionarUsuarios()) {
+            lblError.setText("No tiene permiso para crear usuarios.");
+            return;
+        }
         lblError.setText(" ");
         String nombre = txtNombre.getText().trim();
         String passUsuario = new String(txtPasswordUsuario.getPassword());
@@ -173,6 +253,15 @@ public class NuevoUsuario extends JFrame {
             lblError.setText("Las contraseñas no coinciden.");
             return;
         }
+        int idMedico = 0;   // solo se llena cuando el rol es Médico
+        if (esRolMedico()) {
+            int indiceMedico = cbxMedico.getSelectedIndex();
+            if (indiceMedico <= 0 || indiceMedico > idsMedicos.size()) {
+                lblError.setText("Seleccione el médico al que pertenece este usuario.");
+                return;
+            }
+            idMedico = idsMedicos.get(indiceMedico - 1);
+        }
 
         // 2. Base de datos: verificar al admin y guardar
         try {
@@ -183,7 +272,12 @@ public class NuevoUsuario extends JFrame {
                 return;
             }
 
-            if (UsuarioService.crearUsuario(nombre, passUsuario, ROLES_BD[indiceRol])) {
+            if (idMedico > 0 && UsuarioService.medicoYaTieneUsuario(idMedico)) {
+                lblError.setText("Ese médico ya tiene un usuario asignado.");
+                return;
+            }
+
+            if (UsuarioService.crearUsuario(nombre, passUsuario, ROLES_BD[indiceRol], idMedico)) {
                 JOptionPane.showMessageDialog(this, "El usuario '" + nombre + "' ha sido registrado con éxito.",
                         "Registro exitoso", JOptionPane.INFORMATION_MESSAGE);
                 limpiar();

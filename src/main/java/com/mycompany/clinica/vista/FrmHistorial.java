@@ -4,17 +4,31 @@
  */
 package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.dao.PacienteDAO;
+import com.mycompany.clinica.modelo.RegistroHistorial;
+import com.mycompany.clinica.servicio.Permisos;
+import com.mycompany.clinica.servicio.Sesion;
+import com.mycompany.clinica.utilidades.AjustarCelda;
+import com.mycompany.clinica.utilidades.ModeloTabla;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author PC-22
  */
 public class FrmHistorial extends javax.swing.JInternalFrame {
 
+    private static final String[] COLUMNAS = {"Fecha/Hora", "Motivo Cita", "Síntomas", "Diagnóstico", "Observaciones", "Receta"};
+
+    private final PacienteDAO pacienteDAO = new PacienteDAO();
+
     /**
      * Creates new form FrmHistorial
      */
     public FrmHistorial() {
         initComponents();
+        tblHistorial.setModel(new ModeloTabla(COLUMNAS));   // mismas columnas antes y después de buscar
     }
 
     /**
@@ -40,6 +54,7 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
 
         jLabel1.setText("HISTORIAL CLÍNICO BÚSQUEDA");
 
+        txtBuscarDni.setColumns(15);
         txtBuscarDni.addActionListener(this::txtBuscarDniActionPerformed);
 
         jLabel2.setText("DNI");
@@ -49,13 +64,10 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
 
         tblHistorial.setModel(new javax.swing.table.DefaultTableModel(
                 new Object [][] {
-                        {null, null, null, null},
-                        {null, null, null, null},
-                        {null, null, null, null},
-                        {null, null, null, null}
+
                 },
                 new String [] {
-                        "Title 1", "Title 2", "Title 3", "Title 4"
+                        "Fecha/Hora", "Motivo Cita", "Síntomas", "Diagnóstico", "Observaciones"
                 }
         ));
         jScrollPane1.setViewportView(tblHistorial);
@@ -102,44 +114,65 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtBuscarDniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscarDniActionPerformed
-        btnBuscarActionPerformed(evt);    }//GEN-LAST:event_txtBuscarDniActionPerformed
+        btnBuscarActionPerformed(evt);
+    }//GEN-LAST:event_txtBuscarDniActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        if (!Permisos.puedeVerHistorial()) {
+            JOptionPane.showMessageDialog(this, "No tiene permiso para realizar esta acción.",
+                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
         String dni = txtBuscarDni.getText().trim();
 
         if (dni.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un número de DNI.");
             return;
         }
 
         // DATOS DE LA SESIÓN: salen del login (clase Sesion), el mismo que usa el resto del sistema
-        if (!com.mycompany.clinica.servicio.Sesion.estaActiva()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Debe iniciar sesión para consultar el historial clínico.");
+        if (!Sesion.estaActiva()) {
+            JOptionPane.showMessageDialog(this, "Debe iniciar sesión para consultar el historial clínico.");
             return;
         }
-        String rolActual = com.mycompany.clinica.servicio.Sesion.getRol();          // "Admin", "Medico" o "Recepcionista"
-        int idMedicoActual = com.mycompany.clinica.servicio.Sesion.getIdUsuario();  // solo se usa si el rol es Médico (filtro del controlador)
+        String rolActual = Sesion.getRol();          // "Admin", "Medico" o "Recepcionista"
+        int idMedicoActual = Sesion.getIdMedico();   // id_medico del usuario (no es id_usuario); solo se usa si el rol es Médico (filtro del DAO)
+        if (Sesion.esMedico() && Sesion.getIdMedico() == 0) {
+            JOptionPane.showMessageDialog(this, "Su usuario no está vinculado a un médico. Pida al administrador que lo vincule.");
+            return;
+        }
 
-        // Llamar al controlador enviando los tres parámetros obligatorios
-        com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
-        javax.swing.table.DefaultTableModel modeloResultados = controlador.consultarHistorialClinico(dni, idMedicoActual, rolActual);
+        // Consultar al DAO enviando los tres parámetros obligatorios
+        ModeloTabla modeloResultados = new ModeloTabla(COLUMNAS);
+        try {
+            for (RegistroHistorial registro : pacienteDAO.consultarHistorialClinico(dni, idMedicoActual, rolActual)) {
+                modeloResultados.addRow(new Object[]{
+                        registro.getFechaHora(),
+                        registro.getMotivo(),
+                        registro.getSintomas(),
+                        registro.getDiagnostico(),
+                        registro.getObservaciones(),
+                        registro.getReceta()
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo consultar el historial:\n" + e.getMessage(),
+                    "Error de base de datos", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         if (modeloResultados.getRowCount() == 0) {
-            javax.swing.JOptionPane.showMessageDialog(this, "No se encontraron registros de atención permitidos para el DNI: " + dni);
+            JOptionPane.showMessageDialog(this, "No se encontraron registros de atención permitidos para el DNI: " + dni);
         }
 
         // 1. Cargar los datos filtrados en la tabla
         tblHistorial.setModel(modeloResultados);
 
         // 2. Aplicar renderizador multilínea para que el texto largo no se corte
-        try {
-            com.mycompany.clinica.utilidades.AjustarCelda adaptador = new com.mycompany.clinica.utilidades.AjustarCelda();
-            for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
-                tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
-            }
-        } catch (Exception e) {
-            System.out.println("Nota: No se cargó el adaptador de celdas.");
+        AjustarCelda adaptador = new AjustarCelda();
+        for (int i = 0; i < tblHistorial.getColumnCount(); i++) {
+            tblHistorial.getColumnModel().getColumn(i).setCellRenderer(adaptador);
         }
 
         // 3. Refrescar las dimensiones en la pantalla
@@ -147,7 +180,6 @@ public class FrmHistorial extends javax.swing.JInternalFrame {
         tblHistorial.repaint();
 
     }//GEN-LAST:event_btnBuscarActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;

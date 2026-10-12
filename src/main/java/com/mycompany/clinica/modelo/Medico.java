@@ -1,78 +1,51 @@
 package com.mycompany.clinica.modelo;
-import com.mycompany.clinica.vista.FrmMedico;
-import javax.swing.JFrame;
-import javax.swing.JDesktopPane;
-import javax.swing.JTextField;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.LineBorder;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Color;
-import java.awt.Font;
 
 public class Medico {
+    private int idMedico;
+    private String nombres;
+    private String apellidos;
+    private String cmp;
+    private String telefono;
+    private String email;
+    private int idEspecialidad;
+    private String especialidad; // nombre de la especialidad (solo se llena al listar, viene del JOIN)
 
-    public static void main(String[] args) {
-        abrirVentana();
+    // Constructor vacío
+    public Medico() {
     }
 
-    /**
-     * Crea y muestra la ventana MDI de Médicos (formulario padre + FrmMedico).
-     * La usan main() para probarla sola y MenuPrincipal para abrirla desde el sistema
-     * (igual que Especialidad.abrirVentana()).
-     *
-     * @return la ventana principal creada, para que quien la abre pueda controlar su cierre
-     */
-    public static JFrame abrirVentana() {
-        // 1. Crear el JFrame principal (Formulario Padre MDI)
-        JFrame ventanaPrincipal = new JFrame("Gestión de Médicos - Vista de Desarrollo");
-        ventanaPrincipal.setExtendedState(JFrame.MAXIMIZED_BOTH); // Pantalla completa
-        ventanaPrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // 2. Instanciar el JDesktopPane contenedor
-        JDesktopPane dskPrincipal = new JDesktopPane();
-        ventanaPrincipal.setContentPane(dskPrincipal);
-
-        // 3. Hacer visible el contenedor principal
-        ventanaPrincipal.setVisible(true);
-
-        // 4. Instanciar e integrar tu JInternalFrame de Médicos
-        FrmMedico frm = new FrmMedico();
-        dskPrincipal.add(frm);
-
-        // 5. Ajustar propiedades visuales automáticas
-        ajustarCamposDeTexto(frm);
-
-        // Aplicar el TitledBorder para incrustar el título "MÉDICOS" en el contorno azul
-        LineBorder bordeAzul = new LineBorder(new Color(120, 160, 220), 2);
-        TitledBorder tituloBorde = new TitledBorder(
-                bordeAzul,
-                "REGISTRO DE MÉDICOS",
-                TitledBorder.CENTER,
-                TitledBorder.TOP,
-                new Font("Tahoma", Font.BOLD, 12),
-                Color.BLACK
-        );
-        frm.setBorder(tituloBorde);
-
-        // Centrar en pantalla. El tamaño lo define FrmMedico (1020x520, pensado para la tabla):
-        // antes aquí se forzaba 600x550 y la tabla de médicos quedaba aplastada.
-        int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
-        int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
-        frm.setLocation(Math.max(0, x), Math.max(0, y));
-
-        // 6. Mostrar el formulario hijo
-        frm.setVisible(true);
-        return ventanaPrincipal;
+    // Constructor para registrar un médico nuevo
+    public Medico(String nombres, String apellidos, String cmp, String telefono, String email, int idEspecialidad) {
+        this.nombres = nombres;
+        this.apellidos = apellidos;
+        this.cmp = cmp;
+        this.telefono = telefono;
+        this.email = email;
+        this.idEspecialidad = idEspecialidad;
     }
 
-    private static void ajustarCamposDeTexto(Container contenedor) {
-        for (Component comp : contenedor.getComponents()) {
-            if (comp instanceof JTextField) {
-                ((JTextField) comp).setColumns(20);
-            } else if (comp instanceof Container) {
-                ajustarCamposDeTexto((Container) comp);
-            }
-        }
-    }
+    // Getters y Setters
+    public int getIdMedico() { return idMedico; }
+    public void setIdMedico(int idMedico) { this.idMedico = idMedico; }
+
+    public String getNombres() { return nombres; }
+    public void setNombres(String nombres) { this.nombres = nombres; }
+
+    public String getApellidos() { return apellidos; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
+
+    public String getCmp() { return cmp; }
+    public void setCmp(String cmp) { this.cmp = cmp; }
+
+    public String getTelefono() { return telefono; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public int getIdEspecialidad() { return idEspecialidad; }
+    public void setIdEspecialidad(int idEspecialidad) { this.idEspecialidad = idEspecialidad; }
+
+    public String getEspecialidad() { return especialidad; }
+    public void setEspecialidad(String especialidad) { this.especialidad = especialidad; }
 }

@@ -20,7 +20,6 @@ public class Login extends JFrame {
     private JPasswordField txtPassword;
     private JLabel lblError;
     private JButton btnEntrar;
-    private JButton btnNuevoUsuario;
 
     public Login() {
         super("Clínica - Inicio de sesión");
@@ -78,14 +77,6 @@ public class Login extends JFrame {
         btnEntrar.addActionListener(e -> entrar());
         Estilo.agregar(panelForm, btnEntrar, 6, 8);
 
-        JLabel lblSinPerfil = Estilo.texto("¿Aún no tienes un perfil?", Font.PLAIN, 13, Estilo.TEXTO_SUAVE);
-        lblSinPerfil.setHorizontalAlignment(SwingConstants.CENTER);
-        Estilo.agregar(panelForm, lblSinPerfil, 7, 18);
-
-        btnNuevoUsuario = Estilo.botonSecundario("Crear nuevo perfil");
-        btnNuevoUsuario.addActionListener(e -> abrirRegistro());
-        Estilo.agregar(panelForm, btnNuevoUsuario, 8, 8);
-
         // ---------- ARMADO DE LA VENTANA ----------
         JPanel raiz = new JPanel(new BorderLayout());
         raiz.add(panelMarca, BorderLayout.WEST);
@@ -99,7 +90,7 @@ public class Login extends JFrame {
 
     /** BOTÓN INGRESAR: valida los datos contra la base de datos y abre el menú principal. */
     private void entrar() {
-        
+
         lblError.setText(" ");
         String usuario = txtUsuario.getText().trim();
         String password = new String(txtPassword.getPassword());
@@ -123,12 +114,6 @@ public class Login extends JFrame {
             JOptionPane.showMessageDialog(this, "No se pudo iniciar sesión:\n" + e.getMessage(),
                     "Error de base de datos", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    /** BOTÓN CREAR NUEVO PERFIL: abre la ventana de registro. */
-    private void abrirRegistro() {
-        new NuevoUsuario().setVisible(true);
-        dispose();
     }
 
     public static void main(String[] args) {

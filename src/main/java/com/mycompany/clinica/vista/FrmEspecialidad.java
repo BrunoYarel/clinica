@@ -1,15 +1,33 @@
 package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.dao.EspecialidadDAO;
+import com.mycompany.clinica.modelo.Especialidad;
+import com.mycompany.clinica.servicio.Permisos;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 public class FrmEspecialidad extends javax.swing.JInternalFrame {
+
+    private final EspecialidadDAO especialidadDAO = new EspecialidadDAO();
 
     private FrmMedico frmMedicoPadre;
 
     public FrmEspecialidad() {
         initComponents();
+        aplicarPermisos();
+    }
+
+    /** Sin permiso para gestionar especialidades el formulario queda deshabilitado. */
+    private void aplicarPermisos() {
+        if (!Permisos.puedeGestionarEspecialidades()) {
+            txtNombre.setEnabled(false);
+            txtDescripcion.setEnabled(false);
+            btnGuardar.setEnabled(false);
+        }
     }
 
     public FrmEspecialidad(FrmMedico frmMedicoPadre) {
-        initComponents();
+        this();
         this.frmMedicoPadre = frmMedicoPadre;
     }
 
@@ -32,11 +50,7 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
         jLabel2.setText("Descripción:");
 
         btnGuardar.setText("GUARDAR");
-        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarActionPerformed(evt);
-            }
-        });
+        btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -74,32 +88,27 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
     }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!Permisos.puedeGestionarEspecialidades()) {
+            JOptionPane.showMessageDialog(this, "No tiene permiso para realizar esta acción.",
+                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
         String nombre = txtNombre.getText().trim();
-        String description = txtDescripcion.getText().trim();
+        String descripcion = txtDescripcion.getText().trim();
 
         if (nombre.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "El nombre de la especialidad es obligatorio.");
+            JOptionPane.showMessageDialog(this, "El nombre de la especialidad es obligatorio.");
             return;
         }
 
-        // Conexión compartida del proyecto (Conexion prueba los puertos y claves típicas de XAMPP local)
-        java.sql.Connection con = com.mycompany.clinica.Conexion.conectar();
+        Especialidad especialidad = new Especialidad();
+        especialidad.setNombre(nombre);
+        especialidad.setDescripcion(descripcion);
 
-        // Si fallaron todas las conexiones automáticas
-        if (con == null) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: No se pudo conectar a MySQL. Verifica tu XAMPP.");
-            return;
-        }
+        try {
+            especialidadDAO.registrarEspecialidad(especialidad);
 
-        // Sentencia de inserción apuntando directamente a tu tabla "especialidad"
-        String sql = "INSERT INTO especialidad (nombre, descripcion) VALUES (?, ?)";
-
-        try (con; java.sql.PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, nombre);
-            ps.setString(2, description);
-            ps.executeUpdate();
-
-            javax.swing.JOptionPane.showMessageDialog(this, "¡Especialidad guardada correctamente!");
+            JOptionPane.showMessageDialog(this, "¡Especialidad guardada correctamente!");
             txtNombre.setText("");
             txtDescripcion.setText("");
 
@@ -107,8 +116,8 @@ public class FrmEspecialidad extends javax.swing.JInternalFrame {
             if (frmMedicoPadre != null) {
                 frmMedicoPadre.cargarComboEspecialidades();
             }
-        } catch (java.sql.SQLException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error de base de datos al insertar: " + e.getMessage());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error de base de datos al insertar: " + e.getMessage());
         }
     }
 

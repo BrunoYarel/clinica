@@ -4,6 +4,8 @@
  */
 package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.servicio.Permisos;
+
 /**
  *
  * @author PC-22
@@ -18,6 +20,7 @@ public class FrmPrincipal extends javax.swing.JFrame {
     public FrmPrincipal() {
 
         initComponents();
+        jMenuItem2.setVisible(Permisos.puedeVerHistorial());
         setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH); // Maximiza la ventana
     }
 
@@ -35,9 +38,9 @@ public class FrmPrincipal extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestión de Pacientes");
 
         javax.swing.GroupLayout dskPrincipalLayout = new javax.swing.GroupLayout(dskPrincipal);
         dskPrincipal.setLayout(dskPrincipalLayout);
@@ -62,9 +65,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
-        jMenuBar1.add(jMenu2);
-
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -82,39 +82,31 @@ public class FrmPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        // 1. Instanciar el formulario hijo
-        FrmPacientes frm = new FrmPacientes();
+        mostrarCentrado(new FrmPacientes());
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        if (!Permisos.puedeVerHistorial()) {
+            return;
+        }
+        mostrarCentrado(new FrmHistorial());
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    /** Agrega un formulario hijo al escritorio (dskPrincipal), lo centra y lo muestra. */
+    private void mostrarCentrado(javax.swing.JInternalFrame frm) {
         // Agrega al contenedor dskPrincipal
         dskPrincipal.add(frm);
         frm.pack();
 
-        // 3. Calcular la posición exacta para centrarlo
+        // Calcula la posición exacta para centrarlo
         int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
         int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
 
-        // 4. Asignar la posición y hacerlo visible
+        // Asigna la posición y lo hace visible
         frm.setLocation(Math.max(0, x), Math.max(0, y));
         frm.setVisible(true);
+    }
 
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        FrmHistorial frm = new FrmHistorial();
-        dskPrincipal.add(frm);
-        frm.pack();
-
-        // Calcula la posición central
-        int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
-        int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
-        frm.setLocation(Math.max(0, x), Math.max(0, y));
-
-        frm.setVisible(true);
-
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
-    
     /**
      * @param args the command line arguments
      */
@@ -143,7 +135,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane dskPrincipal;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;

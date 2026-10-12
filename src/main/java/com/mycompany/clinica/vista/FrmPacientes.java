@@ -4,17 +4,78 @@
  */
 package com.mycompany.clinica.vista;
 
+import com.mycompany.clinica.dao.PacienteDAO;
+import com.mycompany.clinica.modelo.Paciente;
+import com.mycompany.clinica.servicio.Permisos;
+import com.mycompany.clinica.utilidades.ModeloTabla;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+
 /**
  *
  * @author PC-22
  */
 public class FrmPacientes extends javax.swing.JInternalFrame {
 
+    private static final int ERROR_MYSQL_DUPLICADO = 1062; // código de MySQL para "Duplicate entry"
+
+    private final PacienteDAO pacienteDAO = new PacienteDAO();
+    private final List<Paciente> pacientes = new ArrayList<>();   // lo que muestra la tabla, en el mismo orden
+
+    // Controles del panel de búsqueda (se construyen por código)
+    private ModeloTabla modeloTabla;
+    private JTable tblPacientes;
+    private JTextField txtBuscar;
+    private JButton btnBuscar;
+    private JButton btnMostrarTodos;
+    private JButton btnNuevo;
+    private JButton btnEliminar;
+    private int idEditando = 0;   // 0 = registrando uno nuevo; > 0 = editando ese paciente
+
     /**
      * Creates new form FrmPacientes
      */
     public FrmPacientes() {
         initComponents();
+        construirPanelBusqueda();
+        aplicarPermisos();
+        if (Permisos.puedeGestionarPacientes()) {
+            listarPacientes("");
+        }
+    }
+
+    /** Sin permiso para gestionar pacientes el formulario queda deshabilitado. */
+    private void aplicarPermisos() {
+        if (!Permisos.puedeGestionarPacientes()) {
+            txtDocumento.setEnabled(false);
+            txtNombres.setEnabled(false);
+            txtApellidos.setEnabled(false);
+            txtTelefono.setEnabled(false);
+            txtEmail.setEnabled(false);
+            txtFechaNacimiento.setEnabled(false);
+            btnGuardar.setEnabled(false);
+            // Controles nuevos: sin búsqueda ni edición
+            txtBuscar.setEnabled(false);
+            btnBuscar.setEnabled(false);
+            btnMostrarTodos.setEnabled(false);
+            tblPacientes.setEnabled(false);
+            btnNuevo.setEnabled(false);
+            btnEliminar.setEnabled(false);
+        }
     }
 
     /**
@@ -49,13 +110,13 @@ public class FrmPacientes extends javax.swing.JInternalFrame {
 
         jLabel1.setText("REGISTRO DE PACIENTES");
 
-        txtDocumento.setText("jTextField1");
+        txtDocumento.setColumns(20);
 
-        txtNombres.setText("jTextField2");
+        txtNombres.setColumns(20);
 
-        txtApellidos.setText("jTextField3");
+        txtApellidos.setColumns(20);
 
-        txtTelefono.setText("jTextField4");
+        txtTelefono.setColumns(20);
 
         jLabel3.setText("NOMBRE");
 
@@ -69,11 +130,11 @@ public class FrmPacientes extends javax.swing.JInternalFrame {
 
         jLabel7.setText("F.Nacimiento");
 
-        txtEmail.setText("jTextField5");
+        txtEmail.setColumns(20);
 
-        txtFechaNacimiento.setText("jTextField6");
+        txtFechaNacimiento.setColumns(20);
 
-        btnGuardar.setText("jButton1");
+        btnGuardar.setText("GUARDAR");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
 
         jDesktopPane1.setLayer(jLabel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
@@ -94,130 +155,333 @@ public class FrmPacientes extends javax.swing.JInternalFrame {
         javax.swing.GroupLayout jDesktopPane1Layout = new javax.swing.GroupLayout(jDesktopPane1);
         jDesktopPane1.setLayout(jDesktopPane1Layout);
         jDesktopPane1Layout.setHorizontalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                        .addGap(111, 111, 111)
-                        .addComponent(jLabel1))
-                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                        .addGap(89, 89, 89)
-                        .addComponent(jLabel2))
-                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                        .addGap(87, 87, 87)
-                        .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel5)
+                jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jDesktopPane1Layout.createSequentialGroup()
                                 .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel3)
-                                    .addComponent(jLabel4)))
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7))
-                        .addGap(40, 40, 40)
-                        .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                        .addGap(149, 149, 149)
-                        .addComponent(btnGuardar)))
-                .addContainerGap(123, Short.MAX_VALUE))
+                                        .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                                                .addGap(111, 111, 111)
+                                                .addComponent(jLabel1))
+                                        .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                                                .addGap(89, 89, 89)
+                                                .addComponent(jLabel2))
+                                        .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                                                .addGap(87, 87, 87)
+                                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                                .addComponent(jLabel5)
+                                                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(jLabel3)
+                                                                        .addComponent(jLabel4)))
+                                                        .addComponent(jLabel6)
+                                                        .addComponent(jLabel7))
+                                                .addGap(40, 40, 40)
+                                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(txtFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(txtDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                                                .addGap(149, 149, 149)
+                                                .addComponent(btnGuardar)))
+                                .addContainerGap(123, Short.MAX_VALUE))
         );
         jDesktopPane1Layout.setVerticalGroup(
-            jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jDesktopPane1Layout.createSequentialGroup()
-                .addGap(26, 26, 26)
-                .addComponent(jLabel1)
-                .addGap(23, 23, 23)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(2, 2, 2)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addComponent(btnGuardar)
-                .addContainerGap(31, Short.MAX_VALUE))
+                jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jDesktopPane1Layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel1)
+                                .addGap(23, 23, 23)
+                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel2)
+                                        .addComponent(txtDocumento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(2, 2, 2)
+                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel3)
+                                        .addComponent(txtNombres, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel4)
+                                        .addComponent(txtApellidos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel5)
+                                        .addComponent(txtTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel6)
+                                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jDesktopPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(jLabel7)
+                                        .addComponent(txtFechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(27, 27, 27)
+                                .addComponent(btnGuardar)
+                                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-                                          
-    // 1. Capturar los datos que el usuario escribió en la pantalla
-    String nombres = txtNombres.getText().trim();
-    String apellidos = txtApellidos.getText().trim();
-    String documento = txtDocumento.getText().trim();
-    String fechaNac = txtFechaNacimiento.getText().trim();
-    String telefono = txtTelefono.getText().trim();
-    String email = txtEmail.getText().trim();
+        if (!Permisos.puedeGestionarPacientes()) {
+            JOptionPane.showMessageDialog(this, "No tiene permiso para realizar esta acción.",
+                    "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        // 1. Capturar los datos que el usuario escribió en la pantalla
+        String nombres = txtNombres.getText().trim();
+        String apellidos = txtApellidos.getText().trim();
+        String documento = txtDocumento.getText().trim();
+        String fechaNac = txtFechaNacimiento.getText().trim();
+        String telefono = txtTelefono.getText().trim();
+        String email = txtEmail.getText().trim();
 
-    // Validar que los campos obligatorios no estén vacíos
-    if (nombres.isEmpty() || apellidos.isEmpty() || documento.isEmpty() || fechaNac.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios.");
-        return;
-    }
+        // Validar que los campos obligatorios no estén vacíos
+        if (nombres.isEmpty() || apellidos.isEmpty() || documento.isEmpty() || fechaNac.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos obligatorios.");
+            return;
+        }
 
-    // 2. Crear el objeto modelo Paciente con esos datos
-    com.mycompany.clinica.modelo.Paciente nuevoPaciente = new com.mycompany.clinica.modelo.Paciente(nombres, apellidos, documento, fechaNac, telefono, email);
+        // 2. Crear el objeto modelo Paciente con esos datos
+        Paciente nuevoPaciente = new Paciente(nombres, apellidos, documento, fechaNac, telefono, email);
+        nuevoPaciente.setIdPaciente(idEditando); // 0 al registrar; el id seleccionado al editar
+        boolean editando = idEditando > 0;
 
-    // 3. Llamar al controlador para mandarlo a la base de datos
-    com.mycompany.clinica.controlador.PacienteControlador controlador = new com.mycompany.clinica.controlador.PacienteControlador();
-    
-    if (controlador.registrarPaciente(nuevoPaciente)) {
-        javax.swing.JOptionPane.showMessageDialog(this, "¡Paciente registrado con éxito en el sistema!");
-        
-        // Limpiar los campos después de guardar
+        // 3. Llamar al DAO para mandarlo a la base de datos (registrar o actualizar)
+        try {
+            boolean guardado = editando
+                    ? pacienteDAO.actualizarPaciente(nuevoPaciente)
+                    : pacienteDAO.registrarPaciente(nuevoPaciente);
+            if (guardado) {
+                JOptionPane.showMessageDialog(this, editando
+                        ? "¡Paciente actualizado con éxito!"
+                        : "¡Paciente registrado con éxito en el sistema!");
+                limpiarCampos();
+                salirModoEdicion();
+                refrescarTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "Hubo un error al guardar el paciente.");
+            }
+        } catch (SQLException e) {
+            if (e.getErrorCode() == ERROR_MYSQL_DUPLICADO) {
+                JOptionPane.showMessageDialog(this, "Error: El documento '" + documento + "' ya corresponde a un paciente registrado.");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error en la base de datos: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnGuardarActionPerformed
+
+    /** Vacía todos los campos después de guardar con éxito. */
+    private void limpiarCampos() {
         txtNombres.setText("");
         txtApellidos.setText("");
         txtDocumento.setText("");
         txtFechaNacimiento.setText("");
         txtTelefono.setText("");
         txtEmail.setText("");
-    } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "Hubo un error al guardar el paciente. Verifique el DNI único.");
     }
 
-   // TODO add your handling code here:
-    }//GEN-LAST:event_btnGuardarActionPerformed
+    /** Construye por código el panel derecho (búsqueda, tabla y botones) y lo ubica junto al formulario. */
+    private void construirPanelBusqueda() {
+        txtBuscar = new JTextField(15);
+        txtBuscar.setToolTipText("DNI, nombres o apellidos");
+        txtBuscar.addActionListener(this::btnBuscarActionPerformed); // Enter también busca
 
+        btnBuscar = new JButton("BUSCAR");
+        btnBuscar.addActionListener(this::btnBuscarActionPerformed);
+        btnMostrarTodos = new JButton("MOSTRAR TODOS");
+        btnMostrarTodos.addActionListener(this::btnMostrarTodosActionPerformed);
+        btnNuevo = new JButton("NUEVO / LIMPIAR");
+        btnNuevo.addActionListener(this::btnNuevoActionPerformed);
+        btnEliminar = new JButton("ELIMINAR");
+        btnEliminar.addActionListener(this::btnEliminarActionPerformed);
+
+        JPanel pnlBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pnlBusqueda.add(new JLabel("BUSCAR:"));
+        pnlBusqueda.add(txtBuscar);
+        pnlBusqueda.add(btnBuscar);
+        pnlBusqueda.add(btnMostrarTodos);
+
+        modeloTabla = new ModeloTabla("ID", "DNI", "Nombres", "Apellidos", "Teléfono", "Email", "F. Nacimiento");
+        tblPacientes = new JTable(modeloTabla);
+        tblPacientes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tblPacientes.setPreferredScrollableViewportSize(new Dimension(560, 240));
+        int[] anchos = {35, 80, 95, 95, 80, 130, 80};
+        for (int i = 0; i < anchos.length; i++) {
+            tblPacientes.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+        }
+        tblPacientes.getSelectionModel().addListSelectionListener(this::tblPacientesValueChanged);
+
+        // ELIMINAR solo existe en pantalla si el rol puede eliminar (Admin)
+        JPanel pnlAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        pnlAcciones.add(btnNuevo);
+        if (Permisos.puedeEliminarPaciente()) {
+            pnlAcciones.add(btnEliminar);
+        }
+
+        JPanel pnlDerecho = new JPanel(new BorderLayout(0, 5));
+        pnlDerecho.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        pnlDerecho.add(pnlBusqueda, BorderLayout.NORTH);
+        pnlDerecho.add(new JScrollPane(tblPacientes), BorderLayout.CENTER);
+        pnlDerecho.add(pnlAcciones, BorderLayout.SOUTH);
+
+        // Formulario existente a la izquierda, panel nuevo a la derecha
+        getContentPane().removeAll();
+        getContentPane().setLayout(new BorderLayout());
+        getContentPane().add(jDesktopPane1, BorderLayout.WEST);
+        getContentPane().add(pnlDerecho, BorderLayout.CENTER);
+        pack();
+    }
+
+    /** Llena la tabla con los pacientes que coinciden con el texto (vacío = todos). */
+    private void listarPacientes(String texto) {
+        modeloTabla.setRowCount(0);
+        pacientes.clear();
+        try {
+            pacientes.addAll(pacienteDAO.buscarPacientes(texto));
+            for (Paciente p : pacientes) {
+                modeloTabla.addRow(new Object[]{p.getIdPaciente(), p.getDocumento(), p.getNombres(),
+                        p.getApellidos(), p.getTelefono(), p.getEmail(), p.getFechaNacimiento()});
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error en la base de datos: " + e.getMessage());
+        }
+    }
+
+    /** Vuelve a cargar la tabla con el texto de búsqueda actual. */
+    private void refrescarTabla() {
+        listarPacientes(txtBuscar.getText());
+    }
+
+    /** Vuelve al modo "registrar": el botón vuelve a GUARDAR y se quita la selección de la tabla. */
+    private void salirModoEdicion() {
+        idEditando = 0;
+        btnGuardar.setText("GUARDAR");
+        tblPacientes.clearSelection();
+    }
+
+    private void denegarAcceso() {
+        JOptionPane.showMessageDialog(this, "No tiene permiso para realizar esta acción.",
+                "Acceso denegado", JOptionPane.WARNING_MESSAGE);
+    }
+
+    /** Evita mostrar "null" en los campos cuando la base de datos devuelve NULL. */
+    private static String textoSeguro(String valor) {
+        return valor == null ? "" : valor;
+    }
+
+    /** Al seleccionar una fila, sus datos pasan al formulario y el botón cambia a ACTUALIZAR. */
+    private void tblPacientesValueChanged(javax.swing.event.ListSelectionEvent evt) {
+        if (evt.getValueIsAdjusting()) {
+            return;
+        }
+        int fila = tblPacientes.getSelectedRow();
+        if (fila < 0 || fila >= pacientes.size()) {
+            return;
+        }
+        if (!Permisos.puedeGestionarPacientes()) {
+            denegarAcceso();
+            return;
+        }
+        Paciente p = pacientes.get(fila);
+        idEditando = p.getIdPaciente();
+        txtDocumento.setText(textoSeguro(p.getDocumento()));
+        txtNombres.setText(textoSeguro(p.getNombres()));
+        txtApellidos.setText(textoSeguro(p.getApellidos()));
+        txtTelefono.setText(textoSeguro(p.getTelefono()));
+        txtEmail.setText(textoSeguro(p.getEmail()));
+        txtFechaNacimiento.setText(textoSeguro(p.getFechaNacimiento()));
+        btnGuardar.setText("ACTUALIZAR");
+    }
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!Permisos.puedeGestionarPacientes()) {
+            denegarAcceso();
+            return;
+        }
+        listarPacientes(txtBuscar.getText());
+    }
+
+    private void btnMostrarTodosActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!Permisos.puedeGestionarPacientes()) {
+            denegarAcceso();
+            return;
+        }
+        txtBuscar.setText("");
+        listarPacientes("");
+    }
+
+    /** NUEVO / LIMPIAR: vuelve al modo registro con los campos vacíos. */
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {
+        limpiarCampos();
+        salirModoEdicion();
+        txtDocumento.requestFocusInWindow();
+    }
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (!Permisos.puedeEliminarPaciente()) {
+            denegarAcceso();
+            return;
+        }
+        int fila = tblPacientes.getSelectedRow();
+        if (fila < 0 || fila >= pacientes.size()) {
+            JOptionPane.showMessageDialog(this, "Seleccione un paciente de la tabla para eliminarlo.");
+            return;
+        }
+        Paciente p = pacientes.get(fila);
+
+        Object[] opciones = {"Sí", "No"};
+        int respuesta = JOptionPane.showOptionDialog(this,
+                "¿Eliminar al paciente " + p.getNombres() + " " + p.getApellidos()
+                        + " (documento " + p.getDocumento() + ")?",
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, opciones, opciones[1]);
+        if (respuesta != 0) {
+            return;
+        }
+
+        try {
+            if (pacienteDAO.tieneHistorial(p.getIdPaciente())) {
+                JOptionPane.showMessageDialog(this, "No se puede eliminar: el paciente tiene historial clínico.");
+                return;
+            }
+            if (pacienteDAO.tieneCitas(p.getIdPaciente())) {
+                JOptionPane.showMessageDialog(this, "No se puede eliminar: el paciente tiene citas registradas.");
+                return;
+            }
+            if (pacienteDAO.eliminarPaciente(p.getIdPaciente())) {
+                JOptionPane.showMessageDialog(this, "¡Paciente eliminado con éxito!");
+                limpiarCampos();
+                salirModoEdicion();
+                refrescarTabla();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar el paciente.");
+            }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            // Respaldo: la base de datos rechazó el borrado por registros asociados
+            JOptionPane.showMessageDialog(this, "No se puede eliminar: el paciente tiene registros asociados.");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error en la base de datos: " + e.getMessage());
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnGuardar;
