@@ -1,6 +1,15 @@
 package com.mycompany.clinica.vista;
 
 import com.mycompany.clinica.servicio.Permisos;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.CITAS;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.ESPECIALIDADES;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.HISTORIAL;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.MEDICAMENTOS;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.MEDICOS;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.MI_AGENDA;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.PACIENTES;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.REPORTES;
+import static com.mycompany.clinica.servicio.Permisos.Pantalla.USUARIOS;
 import com.mycompany.clinica.servicio.Sesion;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -19,6 +28,8 @@ public class MenuPrincipal extends JFrame {
     private JButton btnCambiarPassword;
     private JButton btnCrearUsuario;
     private JButton btnCerrarSesion;
+    private JPanel areaContenido;
+    private JPanel vistaModuloActual;
 
     public MenuPrincipal() {
         super("Clínica - Menú principal");
@@ -30,7 +41,9 @@ public class MenuPrincipal extends JFrame {
     private void initComponents() {
         JPanel raiz = new JPanel(new BorderLayout());
         raiz.add(crearMenuLateral(), BorderLayout.WEST);
-        raiz.add(crearContenido(), BorderLayout.CENTER);
+        areaContenido = new JPanel(new CardLayout());
+        areaContenido.add(crearContenido(), "INICIO");
+        raiz.add(areaContenido, BorderLayout.CENTER);
         setContentPane(raiz);
 
         setSize(1000, 620);
@@ -114,7 +127,8 @@ public class MenuPrincipal extends JFrame {
     private JPanel crearContenido() {
         // Inicio del médico = Mi agenda (en lugar del banner y las tarjetas); la barra lateral se conserva
         if (Permisos.puedeVer(Permisos.Pantalla.MI_AGENDA)) {
-            return new AgendaPanel();
+            JPanel agenda = instanciar("AgendaPanel", JPanel.class);
+            return agenda != null ? agenda : crearPanelNoDisponible("Mi agenda");
         }
 
         JPanel contenido = new JPanel(new BorderLayout(0, 26));
@@ -256,8 +270,7 @@ public class MenuPrincipal extends JFrame {
             return;
         }
         if (modulo.equals("Historial")) {
-            abrirModuloEn(VentanaMdi.abrir("Historial clínico", "HISTORIAL CLÍNICO",
-                    new FrmHistorial(), null));
+            abrirModuloHistorial();
             return;
         }
         if (modulo.equals("Medicamentos")) {
@@ -274,33 +287,114 @@ public class MenuPrincipal extends JFrame {
                 modulo, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    /** MÓDULO PACIENTES (gestión de pacientes e historial clínico): ventana FrmPrincipal. */
+    /** MÓDULO PACIENTES: se muestra dentro del área central del menú, sin abrir otra ventana. */
     private void abrirModuloPacientes() {
-        abrirModuloEn(new FrmPrincipal());
+        mostrarModulo(new FrmPacientes(), "Gestión de pacientes");
+    }
+
+    /** MÓDULO HISTORIAL: conserva la barra lateral y el diseño del menú principal. */
+    private void abrirModuloHistorial() {
+        mostrarModulo(new FrmHistorial(), "Historial clínico");
+    }
+
+    /** Sustituye solo el contenido derecho; la ventana y la barra lateral permanecen visibles. */
+    private void mostrarModulo(JPanel modulo, String titulo) {
+        if (vistaModuloActual != null) {
+            areaContenido.remove(vistaModuloActual);
+        }
+        JPanel vista = new JPanel(new BorderLayout(0, 18));
+        vista.setBackground(Estilo.FONDO);
+        vista.setBorder(BorderFactory.createEmptyBorder(24, 28, 24, 28));
+
+        JPanel encabezado = Estilo.panelDegradado(Estilo.PRIMARIO, Estilo.AZUL, 20);
+        encabezado.setLayout(new BorderLayout(12, 0));
+        encabezado.setBorder(BorderFactory.createEmptyBorder(16, 22, 16, 22));
+        encabezado.add(Estilo.texto(titulo, Font.BOLD, 22, Color.WHITE), BorderLayout.CENTER);
+        JButton volver = Estilo.botonClaro("← Inicio");
+        volver.addActionListener(e -> ((CardLayout) areaContenido.getLayout()).show(areaContenido, "INICIO"));
+        encabezado.add(volver, BorderLayout.EAST);
+
+        vista.add(encabezado, BorderLayout.NORTH);
+        vista.add(modulo, BorderLayout.CENTER);
+        vistaModuloActual = vista;
+        areaContenido.add(vistaModuloActual, "MODULO_ACTUAL");
+        ((CardLayout) areaContenido.getLayout()).show(areaContenido, "MODULO_ACTUAL");
+        areaContenido.revalidate();
+        areaContenido.repaint();
     }
 
     /** MÓDULO ESPECIALIDADES (registro de especialidades): FrmEspecialidad dentro de una ventana MDI. */
     private void abrirModuloEspecialidades() {
-        abrirModuloEn(VentanaMdi.abrir("Gestión de Especialidades", "REGISTRO DE ESPECIALIDADES",
-                new FrmEspecialidad(), new Dimension(600, 500)));
+        abrirModuloEn(abrirMdi("FrmEspecialidad", "Especialidades", "Gestión de Especialidades",
+                "REGISTRO DE ESPECIALIDADES", new Dimension(600, 500)));
     }
 
     /** MÓDULO MÉDICOS (registro de médicos y su especialidad): FrmMedico dentro de una ventana MDI. */
     private void abrirModuloMedicos() {
         // FrmMedico define su propio tamaño (1020x520, pensado para la tabla)
-        abrirModuloEn(VentanaMdi.abrir("Gestión de Médicos", "REGISTRO DE MÉDICOS",
-                new FrmMedico(), null));
+        abrirModuloEn(abrirMdi("FrmMedico", "Médicos", "Gestión de Médicos", "REGISTRO DE MÉDICOS", null));
     }
 
     /** MÓDULO MEDICAMENTOS (catálogo para las recetas): FrmMedicamento dentro de una ventana MDI. */
     private void abrirModuloMedicamentos() {
-        abrirModuloEn(VentanaMdi.abrir("Gestión de Medicamentos", "CATÁLOGO DE MEDICAMENTOS",
-                new FrmMedicamento(), null));
+        abrirModuloEn(abrirMdi("FrmMedicamento", "Medicamentos", "Gestión de Medicamentos",
+                "CATÁLOGO DE MEDICAMENTOS", null));
     }
 
     /** MÓDULO CITAS (agenda de citas, área A4): ventana FrmCitas. */
     private void abrirModuloCitas() {
-        abrirModuloEn(new FrmCitas());
+        abrirModuloEn(abrirFrame("FrmCitas", "Citas"));
+    }
+
+    /**
+     * Crea la pantalla de otro módulo a partir del nombre de su clase (paquete vista).
+     * Equivale a new FrmXxx(), pero si esa clase todavía no existe en el proyecto (por ejemplo, en la
+     * versión aislada de login y roles) devuelve null en lugar de impedir que todo el código compile.
+     */
+    private static <T> T instanciar(String clase, Class<T> tipo) {
+        try {
+            return tipo.cast(Class.forName("com.mycompany.clinica.vista." + clase)
+                    .getDeclaredConstructor().newInstance());
+        } catch (ClassNotFoundException e) {
+            return null;   // el módulo de ese compañero no está en esta versión
+        } catch (ReflectiveOperationException e) {
+            // La clase existe pero su constructor falló: es un error real del módulo, no se oculta.
+            throw new IllegalStateException("No se pudo crear " + clase, e);
+        }
+    }
+
+    /** Abre un módulo que es un JFrame (FrmPrincipal, FrmCitas...). Devuelve null si no está disponible. */
+    private JFrame abrirFrame(String clase, String modulo) {
+        JFrame ventana = instanciar(clase, JFrame.class);
+        if (ventana == null) {
+            avisarNoDisponible(modulo);
+        }
+        return ventana;
+    }
+
+    /** Abre un módulo que es un JInternalFrame dentro de una ventana MDI. Devuelve null si no está disponible. */
+    private JFrame abrirMdi(String clase, String modulo, String tituloVentana, String tituloBorde, Dimension tamano) {
+        JInternalFrame formulario = instanciar(clase, JInternalFrame.class);
+        if (formulario == null) {
+            avisarNoDisponible(modulo);
+            return null;
+        }
+        return VentanaMdi.abrir(tituloVentana, tituloBorde, formulario, tamano);
+    }
+
+    private void avisarNoDisponible(String modulo) {
+        JOptionPane.showMessageDialog(this, "El módulo de " + modulo + " no está incluido en esta versión del proyecto.",
+                modulo, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Pantalla de relleno para el inicio del médico cuando el módulo Mi agenda no está en el proyecto. */
+    private static JPanel crearPanelNoDisponible(String modulo) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Estilo.FONDO);
+        JLabel texto = new JLabel("El módulo de " + modulo + " no está incluido en esta versión del proyecto.");
+        texto.setForeground(Color.GRAY);
+        panel.add(texto);
+        return panel;
     }
 
     /**
@@ -310,6 +404,9 @@ public class MenuPrincipal extends JFrame {
      * se cambia únicamente ese comportamiento para que cierren solo esa ventana.
      */
     private void abrirModuloEn(JFrame modulo) {
+        if (modulo == null) {
+            return;   // el módulo no está en el proyecto: ya se avisó al usuario
+        }
         modulo.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         modulo.addWindowListener(new WindowAdapter() {
             @Override

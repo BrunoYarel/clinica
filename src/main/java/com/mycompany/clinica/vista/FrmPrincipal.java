@@ -1,14 +1,10 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package com.mycompany.clinica.vista;
 
 import com.mycompany.clinica.servicio.Permisos;
+import java.awt.BorderLayout;
 
 /**
- *
- * @author PC-22
+ * Ventana Principal de la Clínica adaptada para soportar las nuevas vistas basadas en JPanel.
  */
 public class FrmPrincipal extends javax.swing.JFrame {
 
@@ -18,10 +14,12 @@ public class FrmPrincipal extends javax.swing.JFrame {
      * Creates new form FrmPrincipal
      */
     public FrmPrincipal() {
-
         initComponents();
         jMenuItem2.setVisible(Permisos.puedeVerHistorial());
-        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH); // Maximiza la ventana
+        setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH); // Maximiza la ventana al iniciar
+        
+        // CORRECCIÓN: Cambiamos el diseño del contenedor para que los paneles ocupen todo el espacio disponible
+        dskPrincipal.setLayout(new BorderLayout());
     }
 
     /**
@@ -45,22 +43,30 @@ public class FrmPrincipal extends javax.swing.JFrame {
         javax.swing.GroupLayout dskPrincipalLayout = new javax.swing.GroupLayout(dskPrincipal);
         dskPrincipal.setLayout(dskPrincipalLayout);
         dskPrincipalLayout.setHorizontalGroup(
-                dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 400, Short.MAX_VALUE)
+            dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
         );
         dskPrincipalLayout.setVerticalGroup(
-                dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGap(0, 277, Short.MAX_VALUE)
+            dskPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 277, Short.MAX_VALUE)
         );
 
         jMenu1.setText("Pacientes");
 
         jMenuItem1.setText("Gestion de pacientes");
-        jMenuItem1.addActionListener(this::jMenuItem1ActionPerformed);
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem1);
 
         jMenuItem2.setText("Historial clinica");
-        jMenuItem2.addActionListener(this::jMenuItem2ActionPerformed);
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem2);
 
         jMenuBar1.add(jMenu1);
@@ -70,41 +76,40 @@ public class FrmPrincipal extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(dskPrincipal)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(dskPrincipal)
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(dskPrincipal)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(dskPrincipal)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        mostrarCentrado(new FrmPacientes());
+        // CORRECCIÓN: Instancia FrmPacientes de forma limpia en el contenedor central
+        cambiarPanelContenedor(new FrmPacientes());
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         if (!Permisos.puedeVerHistorial()) {
             return;
         }
-        mostrarCentrado(new FrmHistorial());
+        // CORRECCIÓN: Instancia FrmHistorial de forma limpia en el contenedor central
+        cambiarPanelContenedor(new FrmHistorial());
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    /** Agrega un formulario hijo al escritorio (dskPrincipal), lo centra y lo muestra. */
-    private void mostrarCentrado(javax.swing.JInternalFrame frm) {
-        // Agrega al contenedor dskPrincipal
-        dskPrincipal.add(frm);
-        frm.pack();
-
-        // Calcula la posición exacta para centrarlo
-        int x = (dskPrincipal.getWidth() - frm.getWidth()) / 2;
-        int y = (dskPrincipal.getHeight() - frm.getHeight()) / 2;
-
-        // Asigna la posición y lo hace visible
-        frm.setLocation(Math.max(0, x), Math.max(0, y));
-        frm.setVisible(true);
+    /** 
+     * CORRECCIÓN DE FLUJO:
+     * Remueve el panel que esté activo actualmente en el centro, inyecta el nuevo panel
+     * seleccionado y fuerza el refresco gráfico completo de la interfaz de usuario.
+     */
+    private void cambiarPanelContenedor(javax.swing.JPanel nuevoPanel) {
+        dskPrincipal.removeAll(); 
+        dskPrincipal.add(nuevoPanel, BorderLayout.CENTER); 
+        dskPrincipal.revalidate();
+        dskPrincipal.repaint();
     }
 
     /**
@@ -113,9 +118,6 @@ public class FrmPrincipal extends javax.swing.JFrame {
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
